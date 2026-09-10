@@ -1,9 +1,0 @@
-.track-hero {
-  padding: 80px 0 20px;
-  background: linear-gradient(180deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 100%);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.track-body {
-  padding: 60px 24px 120px;
-}
