@@ -6,7 +6,6 @@ const connectDB = require('./config/db');
 const uploadMiddleware = require('./middleware/uploadMiddleware');
 
 dotenv.config();
-connectDB();
 
 const app = express();
 
@@ -16,7 +15,21 @@ const app = express();
 app.set('trust proxy', true);
 
 // Middleware
-app.use(cors());
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'https://ui-fragrance.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:4173',
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Origin is not allowed by CORS'));
+  },
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -57,14 +70,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-
-// Sirf local chalane ke liye (Vercel par ye automatic handle hota hai)
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
-
-// Vercel serverless function ke liye export lazmi hai
 module.exports = app;

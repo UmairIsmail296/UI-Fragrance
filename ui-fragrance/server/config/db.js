@@ -1,15 +1,35 @@
 const mongoose = require('mongoose');
 
+let connectionPromise;
+
 const connectDB = async () => {
-  try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      // Modern mongoose (6+/8+) no longer needs useNewUrlParser/useUnifiedTopology
-      // but they are harmless if included in older versions.
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+
+  if (connectionPromise) {
+    return connectionPromise;
+  }
+
+  if (typeof process.env.MONGODB_URI !== 'string' || !process.env.MONGODB_URI.trim()) {
+    throw new Error('MONGODB_URI is missing or empty in the server environment');
+  }
+
+  connectionPromise = mongoose.connect(process.env.MONGODB_URI)
+    .then((conn) => {
+      console.log(`MongoDB Connected: ${conn.connection.host}`);
+      return conn.connection;
+    })
+    .catch((error) => {
+      connectionPromise = undefined;
+      throw error;
     });
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+
+  try {
+    return await connectionPromise;
   } catch (error) {
     console.error(`Error connecting to MongoDB: ${error.message}`);
-    process.exit(1);
+    throw error;
   }
 };
 
