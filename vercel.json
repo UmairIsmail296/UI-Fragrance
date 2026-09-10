@@ -1,13 +1,26 @@
 {
   "version": 2,
+  "builds": [
+    {
+      "src": "ui-fragrance/server.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "ui-fragrance/client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/ui-fragrance/server/server.js"
+      "destination": "/ui-fragrance/server.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/ui-fragrance/client/$1"
+      "source": "/((?!api/).*)",
+      "destination": "/ui-fragrance/client/dist/index.html"
     }
   ]
 }
