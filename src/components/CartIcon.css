@@ -1,0 +1,9 @@
+.cart-icon{position:relative;display:inline-flex;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer;padding:6px}
+.cart-icon svg{display:block}
+.cart-badge{position:absolute;top:0;right:0;transform:translate(40%,-40%);background:#d4af37;color:#0a0a0a;border-radius:50%;padding:2px 6px;font-size:11px;font-weight:700}
+.cart-icon.bump{animation:cart-bump 300ms ease-out}
+@keyframes cart-bump{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.preview-item img{max-width:72px;max-height:72px;border-radius:6px}
+.preview-item.video video{max-width:180px;max-height:120px;border-radius:6px}
+.badge-main{display:inline-block;background:#d4af37;color:#0a0a0a;padding:2px 6px;border-radius:3px;margin-left:6px;font-size:11px}
+.btn-link.small{background:none;border:none;color:#d4af37;cursor:pointer}

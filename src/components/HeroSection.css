@@ -1,0 +1,118 @@
+.hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=1600&q=80');
+  background-size: cover;
+  background-position: center 30%;
+  transform: scale(1.05);
+  animation: heroZoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes heroZoom {
+  from { transform: scale(1.05); }
+  to { transform: scale(1.15); }
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    rgba(10, 10, 10, 0.96) 10%,
+    rgba(10, 10, 10, 0.75) 45%,
+    rgba(10, 10, 10, 0.4) 100%
+  );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 640px;
+}
+
+.hero-eyebrow {
+  color: var(--color-gold);
+  font-size: 0.8rem;
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.hero-title {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  line-height: 1.15;
+  margin-bottom: 24px;
+  color: var(--color-white);
+}
+
+.hero-title span {
+  color: var(--color-gold);
+  font-style: italic;
+}
+
+.hero-subtitle {
+  color: var(--color-text-muted);
+  font-size: 1.02rem;
+  max-width: 480px;
+  margin-bottom: 40px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.hero-scroll-indicator {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  height: 42px;
+  border: 2px solid var(--color-gold);
+  border-radius: 16px;
+  z-index: 2;
+}
+
+.hero-scroll-indicator span {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 8px;
+  background: var(--color-gold);
+  border-radius: 2px;
+  animation: scrollDot 1.6s infinite;
+}
+
+@keyframes scrollDot {
+  0% { opacity: 1; top: 8px; }
+  100% { opacity: 0; top: 22px; }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    min-height: 82vh;
+    text-align: center;
+  }
+  .hero-content {
+    margin: 0 auto;
+  }
+  .hero-actions {
+    justify-content: center;
+  }
+  .hero-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
