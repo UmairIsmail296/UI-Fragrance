@@ -43,7 +43,7 @@ const PerfumeManager = () => {
     setLoading(true);
     try {
       const { data } = await api.get('/perfumes');
-      setPerfumes(data);
+      setPerfumes(Array.isArray(data) ? data : []);
     } catch (error) {
       toast.error('Failed to load perfumes');
     } finally {

@@ -76,9 +76,9 @@ const AnalyticsDashboard = () => {
         api.get(`/analytics/visitors?range=${selectedRange}`),
         api.get('/analytics/summary'),
       ]);
-      setSalesData(salesRes.data.data);
-      setVisitorData(visitorsRes.data.data);
-      setSummary(summaryRes.data);
+      setSalesData(Array.isArray(salesRes.data?.data) ? salesRes.data.data : []);
+      setVisitorData(Array.isArray(visitorsRes.data?.data) ? visitorsRes.data.data : []);
+      setSummary(summaryRes.data && typeof summaryRes.data === 'object' ? summaryRes.data : null);
     } catch (error) {
       console.error('Failed to load analytics', error);
     } finally {

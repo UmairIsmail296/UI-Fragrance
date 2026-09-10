@@ -13,7 +13,7 @@ const Home = () => {
     const fetchPerfumes = async () => {
       try {
         const { data } = await api.get('/perfumes');
-        setPerfumes(data.slice(0, 5)); // FIXED: was slice(0, 6) — now max 5 per spec
+        setPerfumes(Array.isArray(data) ? data.slice(0, 5) : []); // FIXED: was slice(0, 6) — now max 5 per spec
       } catch (error) {
         console.error('Failed to load perfumes', error);
       } finally {

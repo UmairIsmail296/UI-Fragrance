@@ -13,7 +13,7 @@ const Shop = () => {
     const fetchPerfumes = async () => {
       try {
         const { data } = await api.get('/perfumes');
-        setPerfumes(data);
+        setPerfumes(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error('Failed to load perfumes', error);
       } finally {
