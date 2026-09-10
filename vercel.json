@@ -16,11 +16,11 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "destination": "ui-fragrance/server/server.js"
+      "destination": "/ui-fragrance/server/server.js"
     },
     {
-      "src": "/(.*)",
-      "destination": "/ui-fragrance/client/$1"
+      "src": "/((?!api/).*)",
+      "destination": "/ui-fragrance/client/index.html"
     }
   ]
 }
