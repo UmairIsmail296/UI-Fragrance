@@ -1,13 +1,26 @@
 {
   "version": 2,
-  "rewrites": [
+  "builds": [
     {
-      "source": "/api/(.*)",
-      "destination": "/server/index.js"
+      "src": "ui-fragrance/server/server.js",
+      "use": "@vercel/node"
     },
     {
-      "source": "/(.*)",
-      "destination": "/client/$1"
+      "src": "ui-fragrance/client/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "build"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "destination": "ui-fragrance/server/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "destination": "/ui-fragrance/client/$1"
     }
   ]
 }
