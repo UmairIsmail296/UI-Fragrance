@@ -1,0 +1,37 @@
+.shop-header {
+  padding: 70px 0 40px;
+  text-align: center;
+  background: linear-gradient(180deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 100%);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.shop-body {
+  padding: 50px 24px 100px;
+}
+
+.shop-search {
+  max-width: 460px;
+  margin: 0 auto 50px;
+}
+
+.shop-search input {
+  width: 100%;
+  padding: 14px 18px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-white);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+.shop-search input:focus {
+  outline: none;
+  border-color: var(--color-gold);
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 28px;
+}
