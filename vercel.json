@@ -9,7 +9,7 @@
       "src": "ui-fragrance/client/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "build"
+        "distDir": "dist"
       }
     }
   ],
