@@ -13,22 +13,21 @@ const seedData = async () => {
     console.log('MongoDB connected for seeding...');
 
     // --- Seed Admin ---
-    const existingAdmin = await Admin.findOne({
-      username: process.env.ADMIN_USERNAME || 'admin',
-    });
+    const adminUsername = process.env.ADMIN_USERNAME || 'admin';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+    const existingAdmin = await Admin.findOne({ username: adminUsername });
 
-    if (!existingAdmin) {
-      const hashedPassword = await bcrypt.hash(
-        process.env.ADMIN_PASSWORD || 'admin123',
-        10
-      );
+    if (existingAdmin) {
+      existingAdmin.password = hashedPassword;
+      await existingAdmin.save();
+      console.log('Admin credentials synchronized from environment');
+    } else {
       await Admin.create({
-        username: process.env.ADMIN_USERNAME || 'admin',
+        username: adminUsername,
         password: hashedPassword,
       });
-      console.log('Default admin created (username: admin, password: admin123)');
-    } else {
-      console.log('Admin already exists, skipping...');
+      console.log('Admin created from environment');
     }
 
     // --- Seed Default Perfume ---
