@@ -33,6 +33,9 @@ module.exports = async (req, res) => {
     console.error('Failed to initialize API:', error.message);
     res.statusCode = 500;
     res.setHeader('Content-Type', 'application/json');
-    return res.end(JSON.stringify({ message: 'Failed to initialize API' }));
+    const message = error.message === 'MONGODB_URI is missing or empty in the server environment'
+      ? error.message
+      : 'Failed to connect to the database';
+    return res.end(JSON.stringify({ message }));
   }
 };
