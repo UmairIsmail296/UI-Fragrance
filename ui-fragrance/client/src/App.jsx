@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Analytics } from '@vercel/analytics/react';
 
 
 import Navbar from './components/Navbar.jsx';
@@ -61,6 +62,7 @@ function App() {
         theme="dark"
         toastStyle={{ fontFamily: "'Poppins', sans-serif", fontSize: '0.85rem' }}
       />
+      <Analytics />
 
       {isAdminRoute ? (
         <Routes>
