@@ -1,7 +1,24 @@
 import axios from 'axios';
 
+const rawBaseUrl = String(import.meta.env.VITE_API_BASE_URL || '/api').trim();
+const configuredBaseUrl = rawBaseUrl
+  .replace(/^VITE_API_BASE_URL\s*=\s*/i, '')
+  .replace(/^['"]|['"]$/g, '')
+  .replace(/\/+$/, '');
+const isAbsoluteUrl = /^https?:\/\//i.test(configuredBaseUrl);
+const apiOrigin = isAbsoluteUrl ? configuredBaseUrl.replace(/\/api$/i, '') : '';
+const apiBaseUrl = isAbsoluteUrl
+  ? `${apiOrigin}/api`
+  : (configuredBaseUrl.startsWith('/') ? configuredBaseUrl : '/api');
+
+export const resolveAssetUrl = (assetPath) => {
+  if (!assetPath || /^(https?:|blob:)/i.test(assetPath)) return assetPath;
+  if (apiOrigin && assetPath.startsWith('/')) return `${apiOrigin}${assetPath}`;
+  return assetPath;
+};
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL: apiBaseUrl,
 });
 
 // Attach admin JWT token to requests when available

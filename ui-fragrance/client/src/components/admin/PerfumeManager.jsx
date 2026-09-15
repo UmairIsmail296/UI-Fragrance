@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import api from '../../utils/api.js';
+import { resolveAssetUrl } from '../../utils/api.js';
 
 const MAX_PHOTOS = 5;
 const MAX_VIDEOS = 2;
@@ -15,12 +16,6 @@ const emptyForm = {
   topNotes: '',
   middleNotes: '',
   baseNotes: '',
-};
-
-const resolveUrl = (path) => {
-  if (!path) return '';
-  if (path.startsWith('http') || path.startsWith('blob:')) return path;
-  return path;
 };
 
 const PerfumeManager = () => {
@@ -353,7 +348,7 @@ const PerfumeManager = () => {
                   {existingPhotos.map((path, index) => (
                     <div className="media-preview-thumb" key={path}>
                       {index === 0 && <span className="media-main-badge">Main</span>}
-                      <img src={resolveUrl(path)} alt={`Photo ${index + 1}`} />
+                      <img src={resolveAssetUrl(path)} alt={`Photo ${index + 1}`} />
                       <button type="button" onClick={() => removeExistingPhoto(path)} aria-label="Remove photo">
                         &times;
                       </button>
@@ -397,7 +392,7 @@ const PerfumeManager = () => {
                 <div className="media-preview-grid">
                   {existingVideos.map((path) => (
                     <div className="media-preview-thumb media-preview-video" key={path}>
-                      <video src={resolveUrl(path)} muted />
+                      <video src={resolveAssetUrl(path)} muted />
                       <button type="button" onClick={() => removeExistingVideo(path)} aria-label="Remove video">
                         &times;
                       </button>
@@ -447,7 +442,7 @@ const PerfumeManager = () => {
                   <td>
                     <img
                       className="admin-table-img"
-                      src={resolveUrl(perfume.photos?.[0])}
+                      src={resolveAssetUrl(perfume.photos?.[0])}
                       alt={perfume.name}
                     />
                   </td>

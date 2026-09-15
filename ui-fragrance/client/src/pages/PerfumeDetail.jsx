@@ -2,14 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api from '../utils/api.js';
+import { resolveAssetUrl } from '../utils/api.js';
 import { useCart } from '../context/CartContext.jsx';
 import './PerfumeDetail.css';
-
-const resolveImageUrl = (image) => {
-  if (!image) return '';
-  if (image.startsWith('http')) return image;
-  return image;
-};
 
 const PerfumeDetail = () => {
   const { id } = useParams();
@@ -115,7 +110,7 @@ const PerfumeDetail = () => {
               {activeMedia?.type === 'video' ? (
                 <video
                   key={activeMediaIndex}
-                  src={resolveImageUrl(activeMedia.src)}
+                  src={resolveAssetUrl(activeMedia.src)}
                   controls
                   preload="metadata"
                   className="detail-main-video"
@@ -123,7 +118,7 @@ const PerfumeDetail = () => {
               ) : (
                 <img
                   key={activeMediaIndex}
-                  src={resolveImageUrl(activeMedia?.src)}
+                  src={resolveAssetUrl(activeMedia?.src)}
                   alt={`${perfume.name} — media ${activeMediaIndex + 1}`}
                   className="detail-main-image"
                 />
@@ -153,7 +148,7 @@ const PerfumeDetail = () => {
                   >
                     {item.type === 'video' ? (
                       <>
-                        <video src={resolveImageUrl(item.src)} muted />
+                        <video src={resolveAssetUrl(item.src)} muted />
                         <span className="detail-thumbnail-play-icon">
                           <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                             <path d="M8 5v14l11-7z" />
@@ -161,7 +156,7 @@ const PerfumeDetail = () => {
                         </span>
                       </>
                     ) : (
-                      <img src={resolveImageUrl(item.src)} alt={`${perfume.name} thumbnail ${index + 1}`} />
+                      <img src={resolveAssetUrl(item.src)} alt={`${perfume.name} thumbnail ${index + 1}`} />
                     )}
                   </button>
                 ))}

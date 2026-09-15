@@ -1,14 +1,9 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext.jsx';
+import { resolveAssetUrl } from '../utils/api.js';
 import { formatPrice, toNumericPrice } from '../utils/price.js';
 import './CartPage.css';
-
-const resolveImageUrl = (image) => {
-  if (!image) return '';
-  if (image.startsWith('http')) return image;
-  return image;
-};
 
 const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, getTotalPrice } = useCart();
@@ -64,7 +59,7 @@ const CartPage = () => {
               return (
                 <div key={item.perfumeId} className="cart-item-card">
                   <img
-                    src={resolveImageUrl(item.mainPhoto)}
+                    src={resolveAssetUrl(item.mainPhoto)}
                     alt={item.name}
                     className="cart-item-thumb"
                   />

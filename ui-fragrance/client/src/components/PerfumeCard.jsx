@@ -2,13 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useCart } from '../context/CartContext.jsx';
+import { resolveAssetUrl } from '../utils/api.js';
 import './PerfumeCard.css';
-
-const resolveImageUrl = (image) => {
-  if (!image) return '';
-  if (image.startsWith('http')) return image;
-  return image; // relative /uploads/... path is proxied by Vite in dev
-};
 
 const PerfumeCard = ({ perfume, className = '' }) => {
   const { addToCart } = useCart();
@@ -25,7 +20,7 @@ const PerfumeCard = ({ perfume, className = '' }) => {
   return (
     <Link to={`/perfume/${perfume._id}`} className={`perfume-card reveal ${className}`}>
       <div className="perfume-card-image-wrap">
-        <img src={resolveImageUrl(mainPhoto)} alt={perfume.name} loading="lazy" />
+        <img src={resolveAssetUrl(mainPhoto)} alt={perfume.name} loading="lazy" />
         {/* NEW: SALE badge — shown whenever discountPrice is below actualPrice */}
         {perfume.discountPrice < perfume.actualPrice && (
           <span className="perfume-card-sale-badge">SALE</span>

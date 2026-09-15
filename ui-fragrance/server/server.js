@@ -17,10 +17,9 @@ app.set('trust proxy', true);
 // Middleware
 const allowedOrigins = [
   process.env.CLIENT_URL,
-  'https://ui-fragrance.vercel.app',
   'http://localhost:5173',
   'http://localhost:4173',
-  'https://www.ui-fragrance.store/',
+  'https://www.ui-fragrance.store',
   'https://ui-fragrance.store'
 ].filter(Boolean);
 

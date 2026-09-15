@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { useCart } from '../context/CartContext.jsx';
 import { formatPrice, toNumericPrice } from '../utils/price.js'; // FIXED: shared price helpers
 import api from '../utils/api.js';
+import { resolveAssetUrl } from '../utils/api.js';
 import './CheckoutPage.css';
 
 const initialForm = {
@@ -18,12 +19,6 @@ const initialForm = {
 // simple flat constant — set to a number (e.g. 100) instead of 0 if you
 // want a delivery charge applied to every order.
 const SHIPPING_FEE = 0;
-
-const resolveImageUrl = (image) => {
-  if (!image) return '';
-  if (image.startsWith('http')) return image;
-  return image;
-};
 
 const CheckoutPage = () => {
   const { cartItems, getTotalPrice, clearCart } = useCart();
@@ -222,7 +217,7 @@ const CheckoutPage = () => {
                   return (
                     <div key={item.perfumeId} className="checkout-summary-item">
                       <img
-                        src={resolveImageUrl(item.mainPhoto)}
+                        src={resolveAssetUrl(item.mainPhoto)}
                         alt={item.name}
                         className="checkout-summary-thumb"
                       />
