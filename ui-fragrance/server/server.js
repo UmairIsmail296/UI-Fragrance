@@ -20,6 +20,8 @@ const allowedOrigins = [
   'https://ui-fragrance.vercel.app',
   'http://localhost:5173',
   'http://localhost:4173',
+  'https://www.ui-fragrance.store/',
+  'https://ui-fragrance.store'
 ].filter(Boolean);
 
 app.use(cors({
