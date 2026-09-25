@@ -1,24 +1,31 @@
 const express = require('express');
 const router = express.Router();
 const Perfume = require('../models/Perfume');
-const upload = require('../middleware/uploadMiddleware');
+const uploadMiddleware = require('../middleware/uploadMiddleware');
 const { protectAdmin } = require('../middleware/authMiddleware');
-const fs = require('fs');
-const path = require('path');
+
+const upload = uploadMiddleware;
+const { uploadToCloudinary, deleteCloudinaryAsset } = uploadMiddleware;
 
 const uploadPerfumeMedia = upload.fields([
   { name: 'photos', maxCount: 5 },
   { name: 'videos', maxCount: 2 },
 ]);
 
-const deleteUploadedFile = (relativePath) => {
-  if (!relativePath || !relativePath.startsWith('/uploads/')) return;
-  const fullPath = path.join(__dirname, '..', relativePath);
-  fs.unlink(fullPath, (err) => {
-    if (err && err.code !== 'ENOENT') {
-      console.error('Error deleting file:', relativePath, err.message);
-    }
-  });
+const deleteMediaUrl = async (mediaUrl) => {
+  if (!mediaUrl || typeof mediaUrl !== 'string') return;
+
+  if (mediaUrl.startsWith('/uploads/')) {
+    return;
+  }
+
+  if (mediaUrl.startsWith('http://') || mediaUrl.startsWith('https://')) {
+    await deleteCloudinaryAsset(mediaUrl);
+  }
+};
+
+const cleanupCloudinaryUrls = async (mediaUrls = []) => {
+  await Promise.all((mediaUrls || []).map((url) => deleteMediaUrl(url)));
 };
 
 const parseJsonArrayField = (value) => {
@@ -35,11 +42,6 @@ const parseJsonArrayField = (value) => {
 const PHOTO_MAX_BYTES = 5 * 1024 * 1024; // 5 MB per photo
 const VIDEO_MAX_BYTES = 50 * 1024 * 1024; // 50 MB per video
 
-const cleanupUploadedFiles = (photoFiles = [], videoFiles = []) => {
-  (photoFiles || []).forEach((f) => deleteUploadedFile(`/uploads/${f.filename}`));
-  (videoFiles || []).forEach((f) => deleteUploadedFile(`/uploads/${f.filename}`));
-};
-
 const validatePerFieldSizes = (req, res) => {
   const photoFiles = req.files?.photos || [];
   const videoFiles = req.files?.videos || [];
@@ -51,7 +53,6 @@ const validatePerFieldSizes = (req, res) => {
   });
 
   if (oversized) {
-    cleanupUploadedFiles(photoFiles, videoFiles);
     const limitMb = oversized.fieldname === 'photos' ? PHOTO_MAX_BYTES / (1024 * 1024) : VIDEO_MAX_BYTES / (1024 * 1024);
     res.status(413).json({ message: `Uploaded file '${oversized.originalname}' in field '${oversized.fieldname}' is too large. Maximum per-file size is ${limitMb} MB.` });
     return false;
@@ -90,12 +91,15 @@ router.get('/:id', async (req, res) => {
 // @desc    Add a new perfume with 1-5 photos and 0-2 videos
 // @access  Private (Admin)
 router.post('/', protectAdmin, uploadPerfumeMedia, async (req, res) => {
+  let uploadedPhotoUrls = [];
+  let uploadedVideoUrls = [];
+
   try {
     const {
       name,
       brand,
-      actualPrice, // FIXED: replaces `price`
-      discountPrice, // FIXED: replaces `price`
+      actualPrice,
+      discountPrice,
       size,
       description,
       topNotes,
@@ -116,34 +120,32 @@ router.post('/', protectAdmin, uploadPerfumeMedia, async (req, res) => {
     const photoFiles = req.files?.photos || [];
     const videoFiles = req.files?.videos || [];
 
-    // Enforce per-field file size limits and cleanup any uploaded files
     if (!validatePerFieldSizes(req, res)) return;
 
     if (photoFiles.length < 1) {
       return res.status(400).json({ message: 'At least 1 photo is required' });
     }
 
-    const photos = photoFiles.map((f) => `/uploads/${f.filename}`);
-    const videos = videoFiles.map((f) => `/uploads/${f.filename}`);
+    uploadedPhotoUrls = await Promise.all(photoFiles.map((file) => uploadToCloudinary(file, 'ui-fragrance/perfumes/photos')));
+    uploadedVideoUrls = await Promise.all(videoFiles.map((file) => uploadToCloudinary(file, 'ui-fragrance/perfumes/videos')));
 
     const perfume = await Perfume.create({
       name,
       brand,
-      actualPrice: parsedActualPrice, // FIXED
-      discountPrice: parsedDiscountPrice, // FIXED
+      actualPrice: parsedActualPrice,
+      discountPrice: parsedDiscountPrice,
       size,
       description,
       topNotes,
       middleNotes,
       baseNotes,
-      photos,
-      videos,
+      photos: uploadedPhotoUrls,
+      videos: uploadedVideoUrls,
     });
 
     res.status(201).json(perfume);
   } catch (error) {
-    (req.files?.photos || []).forEach((f) => deleteUploadedFile(`/uploads/${f.filename}`));
-    (req.files?.videos || []).forEach((f) => deleteUploadedFile(`/uploads/${f.filename}`));
+    await cleanupCloudinaryUrls([...uploadedPhotoUrls, ...uploadedVideoUrls]);
     res.status(500).json({ message: 'Server error while creating perfume', error: error.message });
   }
 });
@@ -153,6 +155,9 @@ router.post('/', protectAdmin, uploadPerfumeMedia, async (req, res) => {
 //          remove specific existing ones by path.
 // @access  Private (Admin)
 router.put('/:id', protectAdmin, uploadPerfumeMedia, async (req, res) => {
+  let uploadedNewPhotoUrls = [];
+  let uploadedNewVideoUrls = [];
+
   try {
     const perfume = await Perfume.findById(req.params.id);
     if (!perfume) {
@@ -162,8 +167,8 @@ router.put('/:id', protectAdmin, uploadPerfumeMedia, async (req, res) => {
     const {
       name,
       brand,
-      actualPrice, // FIXED: replaces `price`
-      discountPrice, // FIXED: replaces `price`
+      actualPrice,
+      discountPrice,
       size,
       description,
       topNotes,
@@ -175,7 +180,6 @@ router.put('/:id', protectAdmin, uploadPerfumeMedia, async (req, res) => {
 
     perfume.name = name || perfume.name;
     perfume.brand = brand || perfume.brand;
-    // FIXED: replaced single price string with two numeric fields
     if (actualPrice !== undefined && actualPrice !== '') {
       const parsedActualPrice = Number(actualPrice);
       if (!Number.isNaN(parsedActualPrice) && parsedActualPrice > 0) {
@@ -203,27 +207,25 @@ router.put('/:id', protectAdmin, uploadPerfumeMedia, async (req, res) => {
     const newPhotoFiles = req.files?.photos || [];
     const newVideoFiles = req.files?.videos || [];
 
-    // Enforce per-field file size limits and cleanup any uploaded files
     if (!validatePerFieldSizes(req, res)) return;
-    const newPhotoPaths = newPhotoFiles.map((f) => `/uploads/${f.filename}`);
-    const newVideoPaths = newVideoFiles.map((f) => `/uploads/${f.filename}`);
 
-    const finalPhotos = [...remainingPhotos, ...newPhotoPaths];
-    const finalVideos = [...remainingVideos, ...newVideoPaths];
+    uploadedNewPhotoUrls = await Promise.all(newPhotoFiles.map((file) => uploadToCloudinary(file, 'ui-fragrance/perfumes/photos')));
+    uploadedNewVideoUrls = await Promise.all(newVideoFiles.map((file) => uploadToCloudinary(file, 'ui-fragrance/perfumes/videos')));
+
+    const finalPhotos = [...remainingPhotos, ...uploadedNewPhotoUrls];
+    const finalVideos = [...remainingVideos, ...uploadedNewVideoUrls];
 
     if (finalPhotos.length < 1 || finalPhotos.length > 5) {
-      newPhotoPaths.forEach(deleteUploadedFile);
-      newVideoPaths.forEach(deleteUploadedFile);
+      await cleanupCloudinaryUrls([...uploadedNewPhotoUrls, ...uploadedNewVideoUrls]);
       return res.status(400).json({ message: 'A perfume must have between 1 and 5 photos' });
     }
     if (finalVideos.length > 2) {
-      newPhotoPaths.forEach(deleteUploadedFile);
-      newVideoPaths.forEach(deleteUploadedFile);
+      await cleanupCloudinaryUrls([...uploadedNewPhotoUrls, ...uploadedNewVideoUrls]);
       return res.status(400).json({ message: 'A perfume can have at most 2 videos' });
     }
 
-    toRemovePhotos.forEach(deleteUploadedFile);
-    toRemoveVideos.forEach(deleteUploadedFile);
+    await Promise.all(toRemovePhotos.map((pathValue) => deleteMediaUrl(pathValue)));
+    await Promise.all(toRemoveVideos.map((pathValue) => deleteMediaUrl(pathValue)));
 
     perfume.photos = finalPhotos;
     perfume.videos = finalVideos;
@@ -231,8 +233,7 @@ router.put('/:id', protectAdmin, uploadPerfumeMedia, async (req, res) => {
     const updatedPerfume = await perfume.save();
     res.status(200).json(updatedPerfume);
   } catch (error) {
-    (req.files?.photos || []).forEach((f) => deleteUploadedFile(`/uploads/${f.filename}`));
-    (req.files?.videos || []).forEach((f) => deleteUploadedFile(`/uploads/${f.filename}`));
+    await cleanupCloudinaryUrls([...uploadedNewPhotoUrls, ...uploadedNewVideoUrls]);
     res.status(500).json({ message: 'Server error while updating perfume', error: error.message });
   }
 });
@@ -247,8 +248,8 @@ router.delete('/:id', protectAdmin, async (req, res) => {
       return res.status(404).json({ message: 'Perfume not found' });
     }
 
-    (perfume.photos || []).forEach(deleteUploadedFile);
-    (perfume.videos || []).forEach(deleteUploadedFile);
+    await Promise.all((perfume.photos || []).map((photoUrl) => deleteMediaUrl(photoUrl)));
+    await Promise.all((perfume.videos || []).map((videoUrl) => deleteMediaUrl(videoUrl)));
 
     await perfume.deleteOne();
     res.status(200).json({ message: 'Perfume deleted successfully' });
