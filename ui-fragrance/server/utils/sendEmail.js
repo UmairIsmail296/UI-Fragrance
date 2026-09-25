@@ -1,13 +1,53 @@
 const nodemailer = require('nodemailer');
 
+const getEmailConfig = () => {
+  const smtpHost = process.env.SMTP_HOST;
+  const smtpPort = Number(process.env.SMTP_PORT || 587);
+  const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER;
+  const smtpPassword = process.env.SMTP_PASSWORD || process.env.EMAIL_PASS;
+  const fromEmail = process.env.FROM_EMAIL || process.env.EMAIL_USER || process.env.SMTP_USER;
+
+  if (smtpHost && smtpUser && smtpPassword) {
+    return {
+      host: smtpHost,
+      port: smtpPort,
+      secure: smtpPort === 465,
+      auth: {
+        user: smtpUser,
+        pass: smtpPassword,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    };
+  }
+
+  if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+    return {
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    };
+  }
+
+  throw new Error('Missing email configuration. Set SMTP_HOST/SMTP_USER/SMTP_PASSWORD or EMAIL_USER/EMAIL_PASS in the Vercel environment.');
+};
+
 const createTransporter = () => {
-  return nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
+  const config = getEmailConfig();
+  const transporter = nodemailer.createTransport(config);
+
+  transporter.verify((error) => {
+    if (error) {
+      console.error('Email transporter verification failed:', error.message);
+      return;
+    }
+    console.log('Email transporter is ready');
   });
+
+  return transporter;
 };
 
 const emailShell = (bodyHtml) => `
@@ -106,10 +146,12 @@ const buildOrderConfirmationHtml = (order) => {
 };
 
 const sendOrderConfirmationEmail = async (order) => {
+  const fromEmail = process.env.FROM_EMAIL || process.env.EMAIL_USER || process.env.SMTP_USER;
+
   try {
     const transporter = createTransporter();
     await transporter.sendMail({
-      from: `"UI Fragrance" <${process.env.EMAIL_USER}>`,
+      from: `"UI Fragrance" <${fromEmail}>`,
       to: order.customerEmail,
       subject: `Order Confirmation - ${order.orderId} | UI Fragrance`,
       html: buildOrderConfirmationHtml(order),
@@ -120,6 +162,7 @@ const sendOrderConfirmationEmail = async (order) => {
     console.error('Message:', error.message);
     if (error.code) console.error('Code:', error.code);
     if (error.response) console.error('SMTP response:', error.response);
+    if (error.stack) console.error('Stack:', error.stack);
     console.error('------------------------------------------------');
     return false;
   }

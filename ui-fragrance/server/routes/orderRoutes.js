@@ -90,10 +90,15 @@ router.post('/', async (req, res) => {
       orderStatus: 'Order Placed',
     });
 
-    await sendOrderConfirmationEmail(order);
+    const emailSent = await sendOrderConfirmationEmail(order);
+    if (!emailSent) {
+      console.error(`Order ${order.orderId} was created but the confirmation email was not delivered.`);
+    }
 
     res.status(201).json({
-      message: 'Order placed successfully! A confirmation email has been sent.',
+      message: emailSent
+        ? 'Order placed successfully! A confirmation email has been sent.'
+        : 'Order placed successfully. The confirmation email could not be delivered at this time.',
       order,
     });
   } catch (error) {
