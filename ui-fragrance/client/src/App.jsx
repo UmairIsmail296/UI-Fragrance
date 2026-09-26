@@ -18,6 +18,7 @@ import api from './utils/api.js';
 import Home from './pages/Home.jsx';
 import Shop from './pages/Shop.jsx';
 import PerfumeDetail from './pages/PerfumeDetail.jsx';
+import CustomerReviews from './pages/CustomerReviews.jsx';
 import AboutUs from './pages/AboutUs.jsx';
 import TrackOrderPage from './pages/TrackOrderPage.jsx';
 import CartPage from './pages/CartPage.jsx'; // NEW
@@ -82,6 +83,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/perfume/:id" element={<PerfumeDetail />} />
+            <Route path="/reviews" element={<CustomerReviews />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/track-order" element={<TrackOrderPage />} />
             {/* NEW: cart / checkout / order success routes (Change 3) */}

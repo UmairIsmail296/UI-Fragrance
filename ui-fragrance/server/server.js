@@ -37,6 +37,7 @@ app.use(express.urlencoded({ extended: true }));
 // Routes
 app.use('/api/perfumes', require('./routes/perfumeRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/reviews', require('./routes/reviewRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 // NEW: visitor logging (POST /api/visitors) + analytics (GET /api/analytics/*)
 app.use('/api', require('./routes/visitorRoutes'));
