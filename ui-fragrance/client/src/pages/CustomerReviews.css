@@ -62,6 +62,28 @@
   font: inherit;
 }
 
+.review-field select {
+  color: rgba(255, 255, 255, 0.7);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--color-gold) 50%), linear-gradient(135deg, var(--color-gold) 50%, transparent 50%);
+  background-position: calc(100% - 18px) calc(50% - 3px), calc(100% - 12px) calc(50% - 3px);
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+.review-field select.rating-selected {
+  color: var(--color-gold);
+  border-color: rgba(212, 175, 55, 0.7);
+  box-shadow: 0 0 0 1px rgba(212, 175, 55, 0.2);
+}
+
+.review-field select option {
+  background: #17171d;
+  color: #ffffff;
+}
+
 .review-field textarea {
   min-height: 140px;
   resize: vertical;

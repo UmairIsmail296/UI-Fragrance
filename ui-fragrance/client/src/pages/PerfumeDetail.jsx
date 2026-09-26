@@ -201,6 +201,7 @@ const PerfumeDetail = () => {
   };
 
   const isOnSale = perfume.discountPrice < perfume.actualPrice;
+  const isRatingSelected = reviewForm.rating !== '';
 
   return (
     <div className="page-fade perfume-detail">
@@ -381,7 +382,13 @@ const PerfumeDetail = () => {
 
                 <div className="review-field">
                   <label htmlFor="review-rating">Your Rating</label>
-                  <select id="review-rating" name="rating" value={reviewForm.rating} onChange={handleReviewChange}>
+                  <select
+                    id="review-rating"
+                    name="rating"
+                    value={reviewForm.rating}
+                    onChange={handleReviewChange}
+                    className={isRatingSelected ? 'rating-selected' : ''}
+                  >
                     <option value="">Select rating</option>
                     <option value="5">5 - Excellent</option>
                     <option value="4">4 - Very Good</option>

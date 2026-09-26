@@ -1,9 +1,11 @@
 export const uploadToCloudinary = async (file, folder = 'ui-fragrance/reviews/photos') => {
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+  const cloudName = String(import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || '').trim();
+  const uploadPreset = String(import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || '').trim();
 
-  if (!cloudName || !uploadPreset) {
-    throw new Error('Cloudinary configuration is missing. Please set VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET.');
+  const isPlaceholderValue = (value) => !value || /your_cloud_name|your_unsigned_upload_preset|replace_me|example/i.test(value);
+
+  if (!cloudName || !uploadPreset || isPlaceholderValue(cloudName) || isPlaceholderValue(uploadPreset)) {
+    throw new Error('Cloudinary is not configured. Add your real VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET values in the client .env file.');
   }
 
   const formData = new FormData();
