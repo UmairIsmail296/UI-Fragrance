@@ -65,25 +65,8 @@ const PerfumeDetail = () => {
     window.scrollTo(0, 0);
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="spinner-wrap" style={{ minHeight: '60vh' }}>
-        <div className="spinner"></div>
-      </div>
-    );
-  }
-
-  if (error || !perfume) {
-    return (
-      <div className="container text-center" style={{ padding: '100px 0' }}>
-        <p style={{ color: 'var(--color-text-muted)', marginBottom: '20px' }}>{error}</p>
-        <Link to="/shop" className="btn-outline">Back to Shop</Link>
-      </div>
-    );
-  }
-
-  const photos = perfume.photos?.length ? perfume.photos : perfume.image ? [perfume.image] : [];
-  const videos = perfume.videos || [];
+  const photos = perfume?.photos?.length ? perfume.photos : perfume?.image ? [perfume.image] : [];
+  const videos = perfume?.videos || [];
 
   // Unified gallery — photo thumbnails and video thumbnails live in the
   // SAME strip, and left/right arrows cycle through all of them together.
@@ -111,6 +94,23 @@ const PerfumeDetail = () => {
     const total = reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0);
     return total / reviews.length;
   }, [reviews]);
+
+  if (loading) {
+    return (
+      <div className="spinner-wrap" style={{ minHeight: '60vh' }}>
+        <div className="spinner"></div>
+      </div>
+    );
+  }
+
+  if (error || !perfume) {
+    return (
+      <div className="container text-center" style={{ padding: '100px 0' }}>
+        <p style={{ color: 'var(--color-text-muted)', marginBottom: '20px' }}>{error}</p>
+        <Link to="/shop" className="btn-outline">Back to Shop</Link>
+      </div>
+    );
+  }
 
   const handleAddToCart = () => {
     addToCart(perfume, quantity);
