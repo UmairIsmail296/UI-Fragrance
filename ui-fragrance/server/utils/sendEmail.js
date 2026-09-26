@@ -136,7 +136,7 @@ const buildOrderConfirmationHtml = (order) => {
     <p style="color:#e0e0e0; line-height:1.6; font-size: 14px;">We'll keep you updated on every step, from confirmation to delivery.</p>
 
     <div style="text-align:center; margin: 28px 0;">
-      <a href="https://ui-fragrance.store" target="_blank" rel="noopener noreferrer" style="display:inline-block; background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%); color:#0a0a0a; padding: 12px 28px; border-radius: 4px; font-weight:600; font-size: 13px; letter-spacing: 1px; text-decoration:none;">
+      <a href="https://www.ui-fragrance.store/track-order" target="_blank" rel="noopener noreferrer" style="display:inline-block; background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%); color:#0a0a0a; padding: 12px 28px; border-radius: 4px; font-weight:600; font-size: 13px; letter-spacing: 1px; text-decoration:none;">
         TRACK YOUR ORDER ON OUR WEBSITE
       </a>
     </div>

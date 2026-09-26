@@ -38,6 +38,35 @@ const parseJsonArrayField = (value) => {
   }
 };
 
+const normalizeMediaUrlList = (value) => {
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => normalizeMediaUrlList(item));
+  }
+
+  if (typeof value !== 'string') {
+    return [];
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (Array.isArray(parsed)) {
+      return normalizeMediaUrlList(parsed);
+    }
+    if (typeof parsed === 'string' && parsed.trim()) {
+      return [parsed.trim()];
+    }
+  } catch {
+    // Ignore invalid JSON; the raw string itself is the URL.
+  }
+
+  return [trimmed];
+};
+
 // Per-field size limits (individual files)
 const PHOTO_MAX_BYTES = 5 * 1024 * 1024; // 5 MB per photo
 const VIDEO_MAX_BYTES = 50 * 1024 * 1024; // 50 MB per video
@@ -87,6 +116,25 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.post('/upload', protectAdmin, upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    const targetFolder = (req.body?.folder && String(req.body.folder).trim()) || 'ui-fragrance/perfumes/photos';
+    const uploadedUrl = await uploadToCloudinary(req.file, targetFolder);
+
+    if (!uploadedUrl) {
+      return res.status(500).json({ message: 'Cloudinary upload failed' });
+    }
+
+    return res.status(200).json({ url: uploadedUrl });
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error while uploading media to Cloudinary', error: error.message });
+  }
+});
+
 // @route   POST /api/perfumes
 // @desc    Add a new perfume with 1-5 photos and 0-2 videos
 // @access  Private (Admin)
@@ -105,6 +153,8 @@ router.post('/', protectAdmin, uploadPerfumeMedia, async (req, res) => {
       topNotes,
       middleNotes,
       baseNotes,
+      photos,
+      videos,
     } = req.body;
 
     if (!name || !brand || !actualPrice || !discountPrice || !size || !description || !topNotes || !middleNotes || !baseNotes) {
@@ -119,15 +169,25 @@ router.post('/', protectAdmin, uploadPerfumeMedia, async (req, res) => {
 
     const photoFiles = req.files?.photos || [];
     const videoFiles = req.files?.videos || [];
+    const directPhotoUrls = normalizeMediaUrlList(photos);
+    const directVideoUrls = normalizeMediaUrlList(videos);
 
-    if (!validatePerFieldSizes(req, res)) return;
+    if ((photoFiles.length || videoFiles.length) && !validatePerFieldSizes(req, res)) return;
 
-    if (photoFiles.length < 1) {
-      return res.status(400).json({ message: 'At least 1 photo is required' });
+    if (directPhotoUrls.length > 0) {
+      uploadedPhotoUrls = directPhotoUrls;
+    } else {
+      if (photoFiles.length < 1) {
+        return res.status(400).json({ message: 'At least 1 photo is required' });
+      }
+      uploadedPhotoUrls = await Promise.all(photoFiles.map((file) => uploadToCloudinary(file, 'ui-fragrance/perfumes/photos')));
     }
 
-    uploadedPhotoUrls = await Promise.all(photoFiles.map((file) => uploadToCloudinary(file, 'ui-fragrance/perfumes/photos')));
-    uploadedVideoUrls = await Promise.all(videoFiles.map((file) => uploadToCloudinary(file, 'ui-fragrance/perfumes/videos')));
+    if (directVideoUrls.length > 0) {
+      uploadedVideoUrls = directVideoUrls;
+    } else {
+      uploadedVideoUrls = await Promise.all(videoFiles.map((file) => uploadToCloudinary(file, 'ui-fragrance/perfumes/videos')));
+    }
 
     const perfume = await Perfume.create({
       name,
@@ -176,6 +236,8 @@ router.put('/:id', protectAdmin, uploadPerfumeMedia, async (req, res) => {
       baseNotes,
       removedPhotos,
       removedVideos,
+      photos,
+      videos,
     } = req.body;
 
     perfume.name = name || perfume.name;
@@ -206,14 +268,21 @@ router.put('/:id', protectAdmin, uploadPerfumeMedia, async (req, res) => {
 
     const newPhotoFiles = req.files?.photos || [];
     const newVideoFiles = req.files?.videos || [];
+    const directPhotoUrls = normalizeMediaUrlList(photos);
+    const directVideoUrls = normalizeMediaUrlList(videos);
 
-    if (!validatePerFieldSizes(req, res)) return;
+    if ((newPhotoFiles.length || newVideoFiles.length) && !validatePerFieldSizes(req, res)) return;
 
-    uploadedNewPhotoUrls = await Promise.all(newPhotoFiles.map((file) => uploadToCloudinary(file, 'ui-fragrance/perfumes/photos')));
-    uploadedNewVideoUrls = await Promise.all(newVideoFiles.map((file) => uploadToCloudinary(file, 'ui-fragrance/perfumes/videos')));
+    if (newPhotoFiles.length > 0) {
+      uploadedNewPhotoUrls = await Promise.all(newPhotoFiles.map((file) => uploadToCloudinary(file, 'ui-fragrance/perfumes/photos')));
+    }
 
-    const finalPhotos = [...remainingPhotos, ...uploadedNewPhotoUrls];
-    const finalVideos = [...remainingVideos, ...uploadedNewVideoUrls];
+    if (newVideoFiles.length > 0) {
+      uploadedNewVideoUrls = await Promise.all(newVideoFiles.map((file) => uploadToCloudinary(file, 'ui-fragrance/perfumes/videos')));
+    }
+
+    const finalPhotos = directPhotoUrls.length > 0 ? directPhotoUrls : [...remainingPhotos, ...uploadedNewPhotoUrls];
+    const finalVideos = directVideoUrls.length > 0 ? directVideoUrls : [...remainingVideos, ...uploadedNewVideoUrls];
 
     if (finalPhotos.length < 1 || finalPhotos.length > 5) {
       await cleanupCloudinaryUrls([...uploadedNewPhotoUrls, ...uploadedNewVideoUrls]);

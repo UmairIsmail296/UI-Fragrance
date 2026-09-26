@@ -108,7 +108,19 @@ const PerfumeManager = () => {
     }
   };
 
-  const handlePhotoSelect = (e) => {
+  const uploadMediaToCloudinary = async (file, type = 'photo') => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', type === 'video' ? 'ui-fragrance/perfumes/videos' : 'ui-fragrance/perfumes/photos');
+
+    const response = await api.post('/perfumes/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+
+    return response.data?.url;
+  };
+
+  const handlePhotoSelect = async (e) => {
     const files = Array.from(e.target.files || []);
     e.target.value = '';
 
@@ -125,11 +137,25 @@ const PerfumeManager = () => {
     }
 
     const accepted = files.slice(0, remainingSlots);
-    const withPreviews = accepted.map((file) => ({ file, previewUrl: URL.createObjectURL(file) }));
-    setNewPhotos((prev) => [...prev, ...withPreviews]);
+    if (!accepted.length) return;
+
+    try {
+      setSubmitting(true);
+      const uploadedFiles = await Promise.all(
+        accepted.map(async (file) => {
+          const url = await uploadMediaToCloudinary(file, 'photo');
+          return { url, previewUrl: URL.createObjectURL(file) };
+        })
+      );
+      setNewPhotos((prev) => [...prev, ...uploadedFiles]);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Photo upload failed. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleVideoSelect = (e) => {
+  const handleVideoSelect = async (e) => {
     const files = Array.from(e.target.files || []);
     e.target.value = '';
 
@@ -146,8 +172,22 @@ const PerfumeManager = () => {
     }
 
     const accepted = files.slice(0, remainingSlots);
-    const withPreviews = accepted.map((file) => ({ file, previewUrl: URL.createObjectURL(file) }));
-    setNewVideos((prev) => [...prev, ...withPreviews]);
+    if (!accepted.length) return;
+
+    try {
+      setSubmitting(true);
+      const uploadedFiles = await Promise.all(
+        accepted.map(async (file) => {
+          const url = await uploadMediaToCloudinary(file, 'video');
+          return { url, previewUrl: URL.createObjectURL(file) };
+        })
+      );
+      setNewVideos((prev) => [...prev, ...uploadedFiles]);
+    } catch (error) {
+      toast.error(error.response?.data?.message || 'Video upload failed. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const removeExistingPhoto = (path) => {
@@ -216,26 +256,23 @@ const PerfumeManager = () => {
       return;
     }
 
-    const formData = new FormData();
-    Object.entries(form).forEach(([key, value]) => formData.append(key, value));
-    newPhotos.forEach((p) => formData.append('photos', p.file));
-    newVideos.forEach((v) => formData.append('videos', v.file));
-    if (editingId) {
-      formData.append('removedPhotos', JSON.stringify(removedPhotos));
-      formData.append('removedVideos', JSON.stringify(removedVideos));
-    }
+    const finalPhotoUrls = [...existingPhotos, ...newPhotos.map((photo) => photo.url)];
+    const finalVideoUrls = [...existingVideos, ...newVideos.map((video) => video.url)];
+
+    const payload = {
+      ...form,
+      photos: finalPhotoUrls,
+      videos: finalVideoUrls,
+      ...(editingId && { removedPhotos: removedPhotos, removedVideos: removedVideos }),
+    };
 
     setSubmitting(true);
     try {
       if (editingId) {
-        await api.put(`/perfumes/${editingId}`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
+        await api.put(`/perfumes/${editingId}`, payload);
         toast.success('Perfume updated successfully');
       } else {
-        await api.post('/perfumes', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
+        await api.post('/perfumes', payload);
         toast.success('Perfume added successfully');
       }
       resetForm();
