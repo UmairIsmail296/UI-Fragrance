@@ -40,7 +40,7 @@ const OrderSuccessPage = () => {
             Thank You For Your <span>Distinction</span>
           </h1>
           <p className="success-subtitle">
-            Your artisanal fragrance is now being prepared with utmost precision and care.
+            Our Team Contact within 24 hour for payment.Your artisanal fragrance is now being prepared with utmost precision and care.
           </p>
 
           {/* Tracking ID Voucher Box */}
