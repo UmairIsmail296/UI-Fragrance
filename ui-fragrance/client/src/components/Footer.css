@@ -1,80 +1,267 @@
-.footer {
-  background: linear-gradient(180deg, #0a0a0a 0%, #000000 100%);
-  border-top: 1px solid var(--color-border);
-  padding-top: 60px;
+/* ==========================================================================
+   MINIMALIST ULTRA-LUXURY FOOTER STYLES
+   ========================================================================== */
+
+:root {
+  --lux-gold: #d4af37;
+  --lux-gold-light: #f5e7a9;
+  --lux-gold-glow: rgba(212, 175, 55, 0.2);
+  --lux-border: rgba(212, 175, 55, 0.15);
+  --lux-bg-card: rgba(255, 255, 255, 0.02);
 }
 
-.footer-grid {
+.lux-footer {
+  position: relative;
+  background: #080808;
+  border-top: 1px solid var(--lux-border);
+  color: #a3a3a3;
+  padding: 70px 0 30px;
+  overflow: hidden;
+}
+
+/* Ambient Top Accent Glow */
+.lux-footer-top-glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 400px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--lux-gold), transparent);
+  box-shadow: 0 0 25px 2px var(--lux-gold);
+}
+
+.lux-footer .container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* --- Main Grid Layout --- */
+.lux-footer-grid {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1fr;
-  gap: 40px;
-  padding-bottom: 40px;
+  grid-template-columns: 1.6fr 1fr 1.3fr;
+  gap: 60px;
+  padding-bottom: 50px;
 }
 
-.footer-brand h3 {
-  font-size: 1.4rem;
+/* --- Column 1: Brand --- */
+.lux-brand-title {
+  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  font-size: 1.5rem;
   letter-spacing: 2px;
-  text-transform: uppercase;
+  color: #ffffff;
+  font-weight: 500;
   margin-bottom: 16px;
 }
 
-.footer-brand h3 span {
-  color: var(--color-gold);
+.lux-brand-title span {
+  background: linear-gradient(135deg, #fff 0%, var(--lux-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-style: italic;
 }
 
-.footer-brand p {
-  color: var(--color-text-muted);
-  font-size: 0.88rem;
-  max-width: 320px;
+.lux-brand-desc {
+  font-size: 0.92rem;
+  line-height: 1.8;
+  color: #888888;
+  max-width: 360px;
+  margin-bottom: 24px;
 }
 
-.footer-links h4,
-.footer-contact h4 {
-  color: var(--color-gold);
-  font-size: 0.95rem;
-  letter-spacing: 1px;
+/* Social Buttons */
+.lux-socials {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.lux-social-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--lux-bg-card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cccccc;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+}
+
+.lux-social-btn svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.3s ease;
+}
+
+.lux-social-btn:hover {
+  border-color: var(--lux-gold);
+  background: var(--lux-gold);
+  color: #000000;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px var(--lux-gold-glow);
+}
+
+.lux-social-btn:hover svg {
+  transform: scale(1.1);
+}
+
+/* --- Titles --- */
+.lux-col-title {
+  color: #ffffff;
+  font-size: 0.85rem;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
-  margin-bottom: 18px;
+  font-weight: 600;
+  margin-bottom: 22px;
 }
 
-.footer-links ul li,
-.footer-contact ul li {
-  color: var(--color-text-muted);
-  font-size: 0.88rem;
-  margin-bottom: 12px;
+/* --- Column 2: Links --- */
+.lux-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.footer-links ul li a,
-.footer-contact ul li a {
-  transition: var(--transition-base);
+.lux-links li {
+  margin-bottom: 14px;
 }
 
-.footer-links ul li a:hover,
-.footer-contact ul li a:hover {
-  color: var(--color-gold);
+.lux-links a {
+  color: #8c8c8c;
+  font-size: 0.92rem;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  position: relative;
+  display: inline-block;
 }
 
-.footer-bottom {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 20px 0;
-  text-align: center;
+.lux-links a:hover {
+  color: var(--lux-gold);
+  transform: translateX(4px);
 }
 
-.footer-bottom p {
-  color: #777;
-  font-size: 0.8rem;
+/* --- Column 3: Contact Details --- */
+.lux-contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contact-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.contact-label {
+  font-size: 0.72rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #666666;
+}
+
+.contact-value {
+  color: #cccccc;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.contact-value.highlight {
+  color: var(--lux-gold);
+  font-weight: 600;
   letter-spacing: 0.5px;
 }
 
-@media (max-width: 760px) {
-  .footer-grid {
+.contact-value.highlight:hover {
+  color: #ffffff;
+}
+
+.contact-value.muted {
+  color: #888888;
+  font-size: 0.88rem;
+}
+
+.contact-value:hover:not(.muted) {
+  color: var(--lux-gold);
+}
+
+/* --- Footer Bottom Strip --- */
+.lux-footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lux-copy {
+  color: #555555;
+  font-size: 0.82rem;
+  margin: 0;
+}
+
+.lux-copy strong {
+  color: #888888;
+  font-weight: 500;
+}
+
+.lux-tagline {
+  color: var(--lux-gold);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (TABLETS & PHONES)
+   ========================================================================== */
+@media (max-width: 860px) {
+  .lux-footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+
+  .brand-col {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 580px) {
+  .lux-footer {
+    padding: 50px 0 25px;
+  }
+
+  .lux-footer-grid {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 36px;
     text-align: center;
   }
 
-  .footer-brand p {
-    max-width: 100%;
-    margin: 0 auto;
+  .brand-col {
+    grid-column: span 1;
+  }
+
+  .lux-brand-desc {
+    margin: 0 auto 20px;
+  }
+
+  .lux-socials {
+    justify-content: center;
+  }
+
+  .lux-links a:hover {
+    transform: none;
+  }
+
+  .lux-footer-bottom {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
   }
 }

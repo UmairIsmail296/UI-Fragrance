@@ -1,90 +1,470 @@
-.track-order-wrap {
-  max-width: 780px;
+/* ==========================================================================
+   LUXURY TRACK ORDER STYLES
+   ========================================================================== */
+
+.track-order-container {
+  max-width: 820px;
+  margin: 40px auto 80px;
+  padding: 0 16px;
+  font-family: inherit;
+}
+
+/* --- Header Section --- */
+.track-header-box {
+  margin-bottom: 35px;
+}
+
+.track-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--color-gold, #d4af37);
+  background: rgba(212, 175, 55, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  padding: 4px 14px;
+  border-radius: 30px;
+  margin-bottom: 12px;
+}
+
+.track-main-title {
+  font-size: 2.2rem;
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.track-main-title span {
+  background: linear-gradient(135deg, #fff 0%, var(--color-gold, #d4af37) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-style: italic;
+}
+
+.track-desc {
+  color: var(--color-text-muted, #999);
+  font-size: 0.95rem;
+  max-width: 500px;
   margin: 0 auto;
 }
 
-.track-order-form {
+/* --- Search Bar Form --- */
+.track-search-form {
   display: flex;
-  gap: 14px;
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  padding: 10px;
-  border-radius: 6px;
+  align-items: center;
+  gap: 12px;
+  background: rgba(22, 22, 22, 0.85);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 50px;
+  padding: 8px 10px 8px 20px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), 0 0 20px rgba(212, 175, 55, 0.05);
+  transition: all 0.3s ease;
 }
 
-.track-order-form input {
+.track-search-form:focus-within {
+  border-color: var(--color-gold, #d4af37);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(212, 175, 55, 0.2);
+}
+
+.search-input-wrapper {
+  display: flex;
+  align-items: center;
   flex: 1;
+  gap: 12px;
+}
+
+.search-icon {
+  width: 20px;
+  height: 20px;
+  stroke: var(--color-gold, #d4af37);
+  opacity: 0.8;
+}
+
+.search-input-wrapper input {
+  width: 100%;
   background: transparent;
   border: none;
   outline: none;
-  color: var(--color-white);
-  font-family: var(--font-body);
+  color: #ffffff;
+  font-size: 1.05rem;
+  letter-spacing: 1.5px;
+  font-weight: 500;
+}
+
+.search-input-wrapper input::placeholder {
+  color: #666666;
+  letter-spacing: normal;
   font-size: 0.95rem;
-  padding: 12px 16px;
 }
 
-.track-order-form input::placeholder {
-  color: #777;
+.track-submit-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #e6c86e 0%, #b8932b 100%);
+  color: #0b0b0b;
+  border: none;
+  outline: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  padding: 14px 28px;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.track-order-form button {
-  min-width: 120px;
-  min-height: 46px;
+.track-submit-btn .arrow-icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
 }
 
-.track-order-result {
-  margin-top: 40px;
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 32px;
+.track-submit-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4);
 }
 
-.track-order-summary {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* UPDATED: 7 fields — quantity/pricing replaced payment method/status */
-  gap: 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  padding-bottom: 24px;
+.track-submit-btn:hover .arrow-icon {
+  transform: translateX(3px);
 }
 
-.track-label {
-  color: var(--color-text-muted);
-  font-size: 0.7rem;
-  text-transform: uppercase;
+.track-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* --- Loader Animation --- */
+.track-loading-state {
+  text-align: center;
+  padding: 50px 0;
+}
+
+.gold-pulse-loader {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(212, 175, 55, 0.15);
+  border-top-color: var(--color-gold, #d4af37);
+  border-radius: 50%;
+  animation: trackSpin 0.9s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes trackSpin {
+  to { transform: rotate(360deg); }
+}
+
+.track-btn-loader {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  border-top-color: #000;
+  border-radius: 50%;
+  animation: trackSpin 0.8s linear infinite;
+}
+
+.track-loading-state p {
+  color: var(--color-gold, #d4af37);
+  font-size: 0.95rem;
   letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   ORDER RESULT LUXURY CARD
+   ========================================================================== */
+.track-result-card {
+  margin-top: 45px;
+  background: linear-gradient(160deg, rgba(26, 26, 26, 0.85) 0%, rgba(14, 14, 14, 0.95) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 20px;
+  padding: 36px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+  animation: resultFadeIn 0.5s ease;
+}
+
+@keyframes resultFadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Top Bar: ID + Status Pill */
+.card-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 22px;
+  margin-bottom: 26px;
+}
+
+.order-id-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.id-label {
+  color: #777;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.id-code {
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  font-size: 0.95rem;
+}
+
+.copy-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-gold, #d4af37);
+  cursor: pointer;
+  font-size: 1rem;
+  margin-left: 4px;
+  transition: transform 0.2s;
+}
+
+.copy-btn:hover {
+  transform: scale(1.2);
+}
+
+/* Status Badges */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  border-radius: 30px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: capitalize;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.status-processing {
+  background: rgba(212, 175, 55, 0.12);
+  color: #e5c358;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+.status-processing .status-dot {
+  background: #e5c358;
+  box-shadow: 0 0 8px #e5c358;
+}
+
+.status-shipped {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+.status-shipped .status-dot {
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+.status-delivered {
+  background: rgba(74, 222, 128, 0.12);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+.status-delivered .status-dot {
+  background: #4ade80;
+  box-shadow: 0 0 8px #4ade80;
+}
+
+.status-cancelled {
+  background: rgba(248, 113, 113, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(248, 113, 113, 0.3);
+}
+.status-cancelled .status-dot {
+  background: #f87171;
+}
+
+/* Meta Grid */
+.order-meta-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+  margin-bottom: 26px;
+}
+
+.meta-box {
+  background: rgba(0, 0, 0, 0.25);
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.meta-label {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--color-gold, #d4af37);
   margin-bottom: 6px;
 }
 
-.track-value {
-  color: var(--color-white);
+.perfume-name {
+  font-size: 1.25rem;
+  color: #ffffff;
   font-weight: 600;
-  font-size: 0.95rem;
+  letter-spacing: 0.5px;
 }
 
-.track-status {
-  color: var(--color-gold);
+.customer-name {
+  font-size: 1.05rem;
+  color: #ffffff;
+  font-weight: 500;
 }
 
-/* NEW: total amount highlight (replaces the old payment-status-badge) */
-.track-total {
-  color: var(--color-gold);
+/* Financial Strip (Receipt / Pricing Details) */
+.financial-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10, 10, 10, 0.6);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+  border-radius: 12px;
+  padding: 18px 24px;
+  margin-bottom: 36px;
+}
+
+.strip-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.strip-label {
+  font-size: 0.72rem;
+  color: #888888;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.strip-val {
+  font-size: 1rem;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.strip-divider {
+  width: 1px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.highlight-total .total-price {
+  color: var(--color-gold, #d4af37);
+  font-size: 1.25rem;
   font-weight: 700;
 }
-.track-order-empty {
-  margin-top: 30px;
-  text-align: center;
-  color: var(--color-text-muted);
-  border: 1px dashed rgba(212, 175, 55, 0.3);
-  padding: 26px;
-  border-radius: 6px;
+
+/* Stepper Section Container */
+.stepper-wrapper-lux {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 28px;
 }
 
-@media (max-width: 700px) {
-  .track-order-summary {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .track-order-form {
+.stepper-title {
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color-gold, #d4af37);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+/* --- Empty / Not Found State --- */
+.track-empty-state {
+  margin-top: 40px;
+  text-align: center;
+  background: rgba(22, 22, 22, 0.6);
+  border: 1px dashed rgba(212, 175, 55, 0.3);
+  padding: 40px 24px;
+  border-radius: 16px;
+}
+
+.empty-icon {
+  font-size: 2.2rem;
+  color: var(--color-gold, #d4af37);
+  margin-bottom: 12px;
+}
+
+.track-empty-state h4 {
+  color: #fff;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.track-empty-state p {
+  color: #999;
+  font-size: 0.95rem;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN
+   ========================================================================== */
+@media (max-width: 720px) {
+  .track-search-form {
     flex-direction: column;
+    border-radius: 18px;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .search-input-wrapper {
+    width: 100%;
+    padding: 6px 4px;
+  }
+
+  .track-submit-btn {
+    width: 100%;
+    border-radius: 12px;
+  }
+
+  .order-meta-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .financial-strip {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .strip-divider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .card-top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .track-result-card {
+    padding: 24px 18px;
   }
 }

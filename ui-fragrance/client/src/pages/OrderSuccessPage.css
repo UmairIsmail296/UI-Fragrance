@@ -1,5 +1,381 @@
-.order-success-page .success-icon{width:84px;height:84px;border-radius:50%;background:#d4af37;color:#0a0a0a;font-size:42px;display:inline-flex;align-items:center;justify-content:center;margin:0 auto 18px}
-.order-success-page h2{color:#0a0a0a;margin-top:6px}
-.order-success-page .tracking-id{margin-top:10px;color:#333}
-.order-success-page .btn-outline{border:1px solid #333;color:#333;padding:8px 12px;border-radius:6px;text-decoration:none}
-.order-success-page .btn-gold{background:linear-gradient(90deg,#d4af37,#b8860b);color:#0a0a0a;padding:8px 12px;border-radius:6px;text-decoration:none}
+/* ==========================================================================
+   LUXURY ORDER SUCCESS PAGE STYLES
+   ========================================================================== */
+
+:root {
+  --lux-gold: #d4af37;
+  --lux-gold-light: #f5e7a9;
+  --lux-gold-glow: rgba(212, 175, 55, 0.22);
+  --lux-border: rgba(212, 175, 55, 0.2);
+  --lux-border-hover: rgba(212, 175, 55, 0.5);
+  --font-serif: 'Cinzel', 'Playfair Display', Georgia, serif;
+}
+
+.order-success-page {
+  position: relative;
+  background-color: #070707;
+  color: #e5e5e5;
+  padding: 80px 0 120px;
+  min-height: 85vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Ambient Radial Glow */
+.success-ambient-glow {
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 650px;
+  height: 450px;
+  background: radial-gradient(circle, var(--lux-gold-glow) 0%, transparent 70%);
+  filter: blur(100px);
+  pointer-events: none;
+}
+
+.order-success-page .container {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 20px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Main Luxury Card */
+.lux-success-card {
+  background: linear-gradient(165deg, rgba(24, 24, 24, 0.9) 0%, rgba(12, 12, 12, 0.98) 100%);
+  border: 1px solid var(--lux-border);
+  border-radius: 24px;
+  padding: 50px 40px;
+  text-align: center;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.7), 0 0 30px rgba(212, 175, 55, 0.08);
+  animation: cardFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardFadeIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* --- Animated Success Icon --- */
+.success-icon-wrapper {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  margin: 0 auto 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-pulse-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid var(--lux-gold);
+  opacity: 0.4;
+  animation: ringPulse 2.5s infinite ease-out;
+}
+
+@keyframes ringPulse {
+  0% { transform: scale(0.85); opacity: 0.8; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+.success-icon-inner {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e6c86e 0%, #b8932b 100%);
+  color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+}
+
+.success-icon-inner svg {
+  width: 38px;
+  height: 38px;
+  stroke: #080808;
+}
+
+/* --- Badges & Headings --- */
+.success-badge {
+  display: inline-block;
+  padding: 5px 16px;
+  border-radius: 40px;
+  border: 1px solid var(--lux-border);
+  background: rgba(212, 175, 55, 0.08);
+  color: var(--lux-gold);
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.success-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2rem, 4vw, 2.7rem);
+  color: #ffffff;
+  font-weight: 400;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.success-title span {
+  font-style: italic;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lux-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.success-subtitle {
+  color: #9e9e9e;
+  font-size: 1.05rem;
+  max-width: 520px;
+  margin: 0 auto 34px;
+  line-height: 1.6;
+}
+
+/* --- Tracking Voucher Code Box --- */
+.tracking-voucher-box {
+  background: rgba(10, 10, 10, 0.7);
+  border: 1px dashed var(--lux-gold);
+  border-radius: 14px;
+  padding: 16px 24px;
+  max-width: 480px;
+  margin: 0 auto 34px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.voucher-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.voucher-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: #777777;
+  margin-bottom: 3px;
+}
+
+.voucher-code {
+  font-family: inherit;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--lux-gold);
+}
+
+.copy-code-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.copy-code-btn:hover {
+  background: var(--lux-gold);
+  color: #000;
+  border-color: var(--lux-gold);
+}
+
+.copy-code-btn.copied {
+  background: rgba(74, 222, 128, 0.15);
+  border-color: #4ade80;
+  color: #4ade80;
+}
+
+/* --- Steps / Progress Ribbon --- */
+.order-next-steps {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 18px 24px;
+  margin-bottom: 28px;
+}
+
+.step-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.step-num {
+  font-family: var(--font-serif);
+  font-size: 1.1rem;
+  color: var(--lux-gold);
+  font-weight: 600;
+  background: rgba(212, 175, 55, 0.08);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--lux-border);
+}
+
+.step-details h5 {
+  font-size: 0.88rem;
+  color: #ffffff;
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.step-details p {
+  font-size: 0.74rem;
+  color: #777777;
+  margin: 0;
+}
+
+.step-connector {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0 14px;
+}
+
+.success-note {
+  color: #777777;
+  font-size: 0.88rem;
+  margin-bottom: 34px;
+}
+
+/* --- Action Buttons --- */
+.success-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.btn-track-lux {
+  background: linear-gradient(135deg, #e6c86e 0%, #b8932b 100%);
+  color: #080808;
+  padding: 15px 32px;
+  border-radius: 40px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 24px rgba(212, 175, 55, 0.3);
+}
+
+.btn-track-lux:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(212, 175, 55, 0.45);
+}
+
+.btn-shop-lux {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 14px 30px;
+  border-radius: 40px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-shop-lux:hover {
+  border-color: var(--lux-gold);
+  color: var(--lux-gold);
+  background: rgba(212, 175, 55, 0.05);
+  transform: translateY(-2px);
+}
+
+/* --- WhatsApp Concierge Section --- */
+.success-help {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: #777777;
+}
+
+.whatsapp-concierge {
+  color: var(--lux-gold);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.whatsapp-concierge:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (MOBILE & TABLETS)
+   ========================================================================== */
+@media (max-width: 700px) {
+  .lux-success-card {
+    padding: 36px 20px;
+  }
+
+  .tracking-voucher-box {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .voucher-info {
+    align-items: center;
+  }
+
+  .order-next-steps {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .step-connector {
+    display: none;
+  }
+
+  .success-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .btn-track-lux,
+  .btn-shop-lux {
+    width: 100%;
+  }
+
+  .success-help {
+    flex-direction: column;
+    gap: 6px;
+  }
+}

@@ -6,19 +6,16 @@ import './TrackOrder.css';
 
 const TRACKING_ID_PATTERN = /^UIF-[A-Z0-9]{6}$/i;
 
-// REMOVED: PAYMENT_METHOD_LABELS / PAYMENT_STATUS_COLORS — payment
-// integration has been fully removed, so there's no payment status/method
-// to display here anymore.
-
 const TrackOrder = () => {
   const [orderIdInput, setOrderIdInput] = useState('');
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleTrack = async (e) => {
     e.preventDefault();
-    const trimmed = orderIdInput.trim();
+    const trimmed = orderIdInput.trim().toUpperCase();
 
     if (!trimmed) {
       toast.error('Please enter your Tracking ID');
@@ -26,7 +23,7 @@ const TrackOrder = () => {
     }
 
     if (!TRACKING_ID_PATTERN.test(trimmed)) {
-      toast.error('Tracking ID should look like UIF-4A7K92');
+      toast.error('Tracking ID must follow format: UIF-XXXXXX');
       return;
     }
 
@@ -44,69 +41,137 @@ const TrackOrder = () => {
     }
   };
 
+  const handleCopyId = (id) => {
+    navigator.clipboard.writeText(id);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const getStatusClass = (status = '') => {
+    const s = status.toLowerCase();
+    if (s.includes('deliver')) return 'status-delivered';
+    if (s.includes('ship') || s.includes('transit') || s.includes('dispatch')) return 'status-shipped';
+    if (s.includes('cancel')) return 'status-cancelled';
+    return 'status-processing';
+  };
+
   return (
-    <div className="track-order-wrap">
-      <form className="track-order-form" onSubmit={handleTrack}>
-        <input
-          type="text"
-          placeholder="Enter your Tracking ID (e.g. UIF-4A7K92)"
-          value={orderIdInput}
-          onChange={(e) => setOrderIdInput(e.target.value)}
-        />
-        <button type="submit" className="btn-gold" disabled={loading}>
-          {loading ? <span className="spinner small"></span> : 'Track'}
+    <div className="track-order-container">
+      {/* Header Info */}
+      <div className="track-header-box text-center">
+        <span className="track-tag">Live Order Tracking</span>
+        <h2 className="track-main-title">Track Your <span>Fragrance</span></h2>
+        <p className="track-desc">
+          Enter your unique Tracking ID sent via confirmation SMS/Email.
+        </p>
+      </div>
+
+      {/* Search Bar Form */}
+      <form className="track-search-form" onSubmit={handleTrack}>
+        <div className="search-input-wrapper">
+          <svg className="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="8" strokeWidth="1.8" />
+            <path d="m21 21-4.35-4.35" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+          <input
+            type="text"
+            placeholder="e.g. UIF-4A7K92"
+            value={orderIdInput}
+            onChange={(e) => setOrderIdInput(e.target.value.toUpperCase())}
+            maxLength={10}
+            spellCheck="false"
+          />
+        </div>
+        <button type="submit" className="track-submit-btn" disabled={loading}>
+          {loading ? (
+            <span className="track-btn-loader"></span>
+          ) : (
+            <>
+              <span>Track Now</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" className="arrow-icon">
+                <path d="M5 12h14M12 5l7 7-7 7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </>
+          )}
         </button>
       </form>
 
+      {/* Loading Skeleton / Animation */}
       {loading && (
-        <div className="spinner-wrap">
-          <div className="spinner"></div>
+        <div className="track-loading-state">
+          <div className="gold-pulse-loader"></div>
+          <p>Locating your luxury package...</p>
         </div>
       )}
 
+      {/* Order Details Found Card */}
       {!loading && order && (
-        <div className="track-order-result reveal visible">
-          <div className="track-order-summary">
-            <div>
-              <p className="track-label">Tracking ID</p>
-              <p className="track-value">{order.orderId}</p>
+        <div className="track-result-card">
+          {/* Card Top Header */}
+          <div className="card-top-bar">
+            <div className="order-id-pill">
+              <span className="id-label">Tracking:</span>
+              <span className="id-code">{order.orderId}</span>
+              <button 
+                type="button" 
+                className="copy-btn" 
+                onClick={() => handleCopyId(order.orderId)}
+                title="Copy ID"
+              >
+                {copied ? '✓' : '⧉'}
+              </button>
             </div>
-            <div>
-              <p className="track-label">Perfume</p>
-              <p className="track-value">{order.selectedPerfume}</p>
-            </div>
-            <div>
-              <p className="track-label">Customer</p>
-              <p className="track-value">{order.customerName}</p>
-            </div>
-            <div>
-              <p className="track-label">Order Status</p>
-              <p className="track-value track-status">{order.orderStatus}</p>
-            </div>
-            {/* NEW: quantity / unit price / total amount (replaces payment method/status) */}
-            <div>
-              <p className="track-label">Quantity</p>
-              <p className="track-value">{order.quantity}</p>
-            </div>
-            <div>
-              <p className="track-label">Unit Price</p>
-              <p className="track-value">Rs. {Number(order.unitPrice).toLocaleString('en-PK')}</p>
-            </div>
-            <div>
-              <p className="track-label">Total Amount</p>
-              <p className="track-value track-total">
-                Rs. {Number(order.totalAmount).toLocaleString('en-PK')}
-              </p>
+            <div className={`status-pill ${getStatusClass(order.orderStatus)}`}>
+              <span className="status-dot"></span>
+              {order.orderStatus}
             </div>
           </div>
 
-          <OrderStepper currentStatus={order.orderStatus} />
+          {/* Core Info Grid */}
+          <div className="order-meta-grid">
+            <div className="meta-box perfume-highlight">
+              <span className="meta-label">Selected Fragrance</span>
+              <h3 className="perfume-name">{order.selectedPerfume}</h3>
+            </div>
+
+            <div className="meta-box">
+              <span className="meta-label">Recipient</span>
+              <p className="meta-value customer-name">{order.customerName}</p>
+            </div>
+          </div>
+
+          {/* Pricing & Quantity Strip */}
+          <div className="financial-strip">
+            <div className="strip-item">
+              <span className="strip-label">Quantity</span>
+              <span className="strip-val">{order.quantity} {order.quantity > 1 ? 'Bottles' : 'Bottle'}</span>
+            </div>
+            <div className="strip-divider"></div>
+            <div className="strip-item">
+              <span className="strip-label">Unit Price</span>
+              <span className="strip-val">Rs. {Number(order.unitPrice).toLocaleString('en-PK')}</span>
+            </div>
+            <div className="strip-divider"></div>
+            <div className="strip-item highlight-total">
+              <span className="strip-label">Total Amount</span>
+              <span className="strip-val total-price">Rs. {Number(order.totalAmount).toLocaleString('en-PK')}</span>
+            </div>
+          </div>
+
+          {/* Stepper Progress Section */}
+          <div className="stepper-wrapper-lux">
+            <h4 className="stepper-title">Delivery Progress</h4>
+            <OrderStepper currentStatus={order.orderStatus} />
+          </div>
         </div>
       )}
 
+      {/* Not Found / Empty State */}
       {!loading && !order && searched && (
-        <div className="track-order-empty">
-          <p>No order found with that ID. Please double-check and try again.</p>
+        <div className="track-empty-state">
+          <div className="empty-icon">⚲</div>
+          <h4>No Shipment Found</h4>
+          <p>We couldn't locate an order matching <strong>"{orderIdInput}"</strong>. Please verify the tracking code and try again.</p>
         </div>
       )}
     </div>
