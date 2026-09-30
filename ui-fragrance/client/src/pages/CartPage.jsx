@@ -9,81 +9,116 @@ const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, getTotalPrice } = useCart();
   const navigate = useNavigate();
 
+  // --- EMPTY CART VIEW ---
   if (cartItems.length === 0) {
     return (
-      <div className="cart-page">
-        <div className="container cart-empty">
-          <div className="cart-empty-icon">
-            <svg viewBox="0 0 24 24" width="56" height="56" fill="currentColor">
-              <path d="M7 4h-2l-1 2H2v2h2l3.6 7.59-1.35 2.44A2 2 0 0 0 8 21h12v-2H8l1.1-2h7.45a2 2 0 0 0 1.8-1.11L21.8 8H6.21l-.94-2H7V4zm-1 15a2 2 0 1 0 2 2 2 2 0 0 0-2-2zm10 0a2 2 0 1 0 2 2 2 2 0 0 0-2-2z" />
-            </svg>
+      <div className="lux-cart-page">
+        <div className="cart-ambient-glow"></div>
+        <div className="container">
+          <div className="cart-empty-box text-center">
+            <div className="empty-cart-vault-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+            </div>
+            <span className="cart-empty-tag">Your Vault is Empty</span>
+            <h2 className="cart-empty-title">
+              No Fragrances <span>Selected</span>
+            </h2>
+            <p className="cart-empty-desc">
+              Your bag is currently empty. Explore our private collection of artisanal blends and find your signature scent today.
+            </p>
+            <Link to="/shop" className="btn-explore-vault">
+              Explore Fragrance Vault →
+            </Link>
           </div>
-          <h2 className="section-title">
-            Your Cart is <span>Empty</span>
-          </h2>
-          <p className="section-subtitle">
-            Looks like you haven't added any fragrances yet.
-          </p>
-          <Link to="/shop" className="btn-gold">
-            Continue Shopping
-          </Link>
         </div>
       </div>
     );
   }
 
   const subtotal = getTotalPrice();
+  const totalItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="cart-page">
+    <div className="lux-cart-page">
+      <div className="cart-ambient-glow"></div>
+
       <div className="container">
-        {/* Breadcrumb — matches CheckoutPage for a consistent funnel feel */}
-        <nav className="cart-breadcrumb" aria-label="Breadcrumb">
+        {/* Breadcrumb Navigation */}
+        <nav className="lux-cart-breadcrumb" aria-label="Breadcrumb">
           <Link to="/">Home</Link>
-          <span className="cart-breadcrumb-sep">&gt;</span>
-          <span className="cart-breadcrumb-current">Cart</span>
+          <span className="breadcrumb-sep">/</span>
+          <Link to="/shop">Collection</Link>
+          <span className="breadcrumb-sep">/</span>
+          <span className="breadcrumb-current">Shopping Bag</span>
         </nav>
 
-        <h1 className="cart-title">Your Cart</h1>
-        <p className="cart-item-count">
-          {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'} in your cart
-        </p>
+        {/* Page Title & Count Indicator */}
+        <div className="cart-header-strip">
+          <div>
+            <span className="cart-header-sub">Your Selection</span>
+            <h1 className="cart-main-heading">
+              Fragrance <span>Bag</span>
+            </h1>
+          </div>
+          <div className="cart-count-badge">
+            {totalItemCount} {totalItemCount === 1 ? 'Bottle' : 'Bottles'} Reserved
+          </div>
+        </div>
 
-        <div className="cart-grid">
-          {/* LEFT: item cards */}
-          <div className="cart-items-col">
+        {/* 2-Column Cart Layout */}
+        <div className="cart-layout-grid">
+          
+          {/* LEFT: Cart Items List */}
+          <div className="cart-items-column">
             {cartItems.map((item) => {
               const unitPrice = toNumericPrice(item.unitPrice);
               const itemSubtotal = unitPrice * item.quantity;
 
               return (
-                <div key={item.perfumeId} className="cart-item-card">
-                  <img
-                    src={resolveAssetUrl(item.mainPhoto)}
-                    alt={item.name}
-                    className="cart-item-thumb"
-                  />
+                <div key={item.perfumeId} className="lux-cart-card">
+                  {/* Thumbnail */}
+                  <Link to={`/perfume/${item.perfumeId}`} className="cart-item-thumb-wrapper">
+                    <img
+                      src={resolveAssetUrl(item.mainPhoto)}
+                      alt={item.name}
+                      className="cart-item-image"
+                    />
+                  </Link>
 
-                  <div className="cart-item-details">
-                    <div className="cart-item-top">
-                      <Link to={`/perfume/${item.perfumeId}`} className="cart-item-name">
-                        {item.name}
-                      </Link>
+                  {/* Details */}
+                  <div className="cart-item-body">
+                    <div className="cart-item-top-row">
+                      <div>
+                        <span className="item-category-label">Artisanal Extract</span>
+                        <Link to={`/perfume/${item.perfumeId}`} className="cart-item-title-link">
+                          {item.name}
+                        </Link>
+                      </div>
+
+                      {/* Remove Button */}
                       <button
-                        className="cart-item-remove"
+                        type="button"
+                        className="cart-item-remove-btn"
                         onClick={() => removeFromCart(item.perfumeId)}
-                        aria-label={`Remove ${item.name} from cart`}
+                        aria-label={`Remove ${item.name} from bag`}
+                        title="Remove Item"
                       >
-                        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                          <path d="M9 3a1 1 0 0 0-1 1v1H4a1 1 0 1 0 0 2h1v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7h1a1 1 0 1 0 0-2h-4V4a1 1 0 0 0-1-1H9zm-2 4h10v13H7V7zm3 2a1 1 0 0 0-1 1v7a1 1 0 1 0 2 0v-7a1 1 0 0 0-1-1zm4 0a1 1 0 0 0-1 1v7a1 1 0 1 0 2 0v-7a1 1 0 0 0-1-1z" />
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                         </svg>
                       </button>
                     </div>
 
-                    <p className="cart-item-unit-price">{formatPrice(unitPrice)} each</p>
+                    <p className="cart-unit-price-text">{formatPrice(unitPrice)} per bottle</p>
 
-                    <div className="cart-item-bottom">
-                      <div className="cart-quantity-stepper">
+                    <div className="cart-item-bottom-row">
+                      {/* Stepper */}
+                      <div className="lux-quantity-picker">
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.perfumeId, item.quantity - 1)}
@@ -92,7 +127,7 @@ const CartPage = () => {
                         >
                           &minus;
                         </button>
-                        <span>{item.quantity}</span>
+                        <span className="picker-qty-val">{item.quantity}</span>
                         <button
                           type="button"
                           onClick={() => updateQuantity(item.perfumeId, item.quantity + 1)}
@@ -103,48 +138,76 @@ const CartPage = () => {
                         </button>
                       </div>
 
-                      <p className="cart-item-subtotal">{formatPrice(itemSubtotal)}</p>
+                      {/* Item Subtotal */}
+                      <div className="cart-item-subtotal-price">
+                        {formatPrice(itemSubtotal)}
+                      </div>
                     </div>
                   </div>
                 </div>
               );
             })}
 
-            <Link to="/shop" className="cart-continue-link">
-              &larr; Continue Shopping
+            <Link to="/shop" className="cart-return-shop-link">
+              ← Return to Fragrance Collection
             </Link>
           </div>
 
-          {/* RIGHT: sticky Order Summary — same visual language as Checkout */}
-          <div className="cart-summary-col">
-            <div className="cart-summary-card">
-              <h2 className="cart-summary-title">Order Summary</h2>
+          {/* RIGHT: Order Summary Card */}
+          <div className="cart-summary-column">
+            <div className="lux-summary-card">
+              <h3 className="summary-title">Order Summary</h3>
 
-              <div className="cart-divider" />
+              <div className="summary-divider"></div>
 
-              <div className="cart-summary-row">
-                <span>Subtotal</span>
-                <span className="cart-summary-row-value">{formatPrice(subtotal)}</span>
-              </div>
-              <div className="cart-summary-row">
-                <span>Items</span>
-                <span className="cart-summary-row-value">
-                  {cartItems.reduce((sum, item) => sum + item.quantity, 0)}
-                </span>
+              <div className="summary-row">
+                <span className="summary-label">Subtotal</span>
+                <span className="summary-value">{formatPrice(subtotal)}</span>
               </div>
 
-              <div className="cart-divider" />
-
-              <div className="cart-summary-total-row">
-                <span>Total</span>
-                <span>{formatPrice(subtotal)}</span>
+              <div className="summary-row">
+                <span className="summary-label">Reserved Items</span>
+                <span className="summary-value">{totalItemCount}</span>
               </div>
 
-              <button className="cart-checkout-btn" onClick={() => navigate('/checkout')}>
+              <div className="summary-row">
+                <span className="summary-label">Nationwide Shipping</span>
+                <span className="summary-value free-delivery-pill">Complimentary</span>
+              </div>
+
+              <div className="summary-divider"></div>
+
+              <div className="summary-total-row">
+                <span className="total-label">Estimated Total</span>
+                <span className="total-value">{formatPrice(subtotal)}</span>
+              </div>
+
+              <button
+                type="button"
+                className="lux-checkout-action-btn"
+                onClick={() => navigate('/checkout')}
+              >
                 Proceed to Checkout
               </button>
+
+              {/* Trust badges */}
+              <div className="summary-trust-perks">
+                <div className="trust-perk-item">
+                  <span className="perk-glyph">✦</span>
+                  <p>100% Authentic Artisanal Formulation</p>
+                </div>
+                <div className="trust-perk-item">
+                  <span className="perk-glyph">◈</span>
+                  <p>Secure Tamper-Proof VIP Packaging</p>
+                </div>
+                <div className="trust-perk-item">
+                  <span className="perk-glyph">✧</span>
+                  <p>Express Dispatch with Tracking</p>
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>

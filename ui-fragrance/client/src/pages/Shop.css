@@ -1,37 +1,309 @@
-.shop-header {
-  padding: 70px 0 40px;
-  text-align: center;
-  background: linear-gradient(180deg, var(--color-bg-secondary) 0%, var(--color-bg-primary) 100%);
-  border-bottom: 1px solid var(--color-border);
+/* ==========================================================================
+   LUXURY SHOP / CATALOG PAGE STYLES
+   ========================================================================== */
+
+:root {
+  --lux-gold: #d4af37;
+  --lux-gold-light: #f5e7a9;
+  --lux-gold-glow: rgba(212, 175, 55, 0.16);
+  --lux-bg-dark: #070707;
+  --lux-bg-card: rgba(20, 20, 20, 0.7);
+  --lux-border: rgba(212, 175, 55, 0.16);
+  --lux-border-hover: rgba(212, 175, 55, 0.45);
+  --font-serif: 'Cinzel', 'Playfair Display', Georgia, serif;
 }
 
-.shop-body {
-  padding: 50px 24px 100px;
+.lux-shop-page {
+  position: relative;
+  background-color: var(--lux-bg-dark);
+  color: #e5e5e5;
+  min-height: 85vh;
+  overflow-x: hidden;
 }
 
-.shop-search {
-  max-width: 460px;
-  margin: 0 auto 50px;
+/* Ambient Radial Glow */
+.shop-ambient-glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 750px;
+  height: 400px;
+  background: radial-gradient(circle, var(--lux-gold-glow) 0%, transparent 70%);
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 1;
 }
 
-.shop-search input {
+.lux-shop-page .container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   1. HERO HEADER
+   ========================================================================== */
+.lux-shop-header {
+  padding: 90px 0 50px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: radial-gradient(ellipse at top, #141414 0%, var(--lux-bg-dark) 80%);
+}
+
+.shop-badge {
+  display: inline-block;
+  padding: 5px 16px;
+  border-radius: 40px;
+  border: 1px solid var(--lux-border);
+  background: rgba(212, 175, 55, 0.06);
+  color: var(--lux-gold);
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.shop-main-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.3rem, 5vw, 3.4rem);
+  color: #ffffff;
+  font-weight: 400;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+
+.shop-main-title span {
+  font-style: italic;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lux-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.shop-subtitle {
+  color: #999999;
+  font-size: 1.05rem;
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ==========================================================================
+   2. SEARCH & CONTROLS BAR
+   ========================================================================== */
+.shop-body-container {
+  padding: 50px 24px 120px;
+}
+
+.shop-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 50px;
+  flex-wrap: wrap;
+}
+
+.shop-search-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 520px;
+  background: rgba(20, 20, 20, 0.8);
+  border: 1px solid var(--lux-border);
+  border-radius: 40px;
+  padding: 6px 18px;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.shop-search-wrapper:focus-within {
+  border-color: var(--lux-gold);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.15);
+}
+
+.search-lens-icon {
+  width: 18px;
+  height: 18px;
+  stroke: var(--lux-gold);
+  opacity: 0.8;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.shop-search-wrapper input {
   width: 100%;
-  padding: 14px 18px;
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  color: var(--color-white);
-  font-family: var(--font-body);
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-family: inherit;
+  padding: 10px 0;
+}
+
+.shop-search-wrapper input::placeholder {
+  color: #666666;
   font-size: 0.9rem;
 }
 
-.shop-search input:focus {
-  outline: none;
-  border-color: var(--color-gold);
+.search-clear-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: #aaaaaa;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 8px;
 }
 
-.shop-grid {
+.search-clear-btn:hover {
+  background: var(--lux-gold);
+  color: #000000;
+}
+
+.shop-count-indicator {
+  font-size: 0.88rem;
+  color: #888888;
+  letter-spacing: 0.5px;
+}
+
+.shop-count-indicator strong {
+  color: var(--lux-gold);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   3. PRODUCT GRID
+   ========================================================================== */
+.lux-shop-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 28px;
+  gap: 32px;
+}
+
+.shop-card-wrapper {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.shop-card-wrapper:hover {
+  transform: translateY(-8px);
+}
+
+/* ==========================================================================
+   4. LOADER & EMPTY STATES
+   ========================================================================== */
+.shop-loader-wrapper {
+  text-align: center;
+  padding: 100px 0;
+}
+
+.shop-gold-spinner {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(212, 175, 55, 0.1);
+  border-top-color: var(--lux-gold);
+  border-radius: 50%;
+  animation: spinVault 0.9s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spinVault {
+  to { transform: rotate(360deg); }
+}
+
+.shop-loader-wrapper p {
+  color: var(--lux-gold);
+  font-size: 0.9rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.shop-empty-state {
+  background: var(--lux-bg-card);
+  border: 1px dashed var(--lux-border);
+  border-radius: 20px;
+  padding: 70px 24px;
+  max-width: 520px;
+  margin: 30px auto 0;
+  backdrop-filter: blur(12px);
+}
+
+.empty-sparkle {
+  font-size: 2.2rem;
+  color: var(--lux-gold);
+  margin-bottom: 12px;
+}
+
+.empty-title {
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.empty-desc {
+  color: #888888;
+  font-size: 0.95rem;
+  margin-bottom: 24px;
+}
+
+.empty-desc strong {
+  color: #ffffff;
+}
+
+.btn-clear-search {
+  background: linear-gradient(135deg, #e6c86e 0%, #b8932b 100%);
+  color: #080808;
+  border: none;
+  font-weight: 600;
+  font-size: 0.88rem;
+  letter-spacing: 0.5px;
+  padding: 12px 26px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-clear-search:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (MOBILE & TABLETS)
+   ========================================================================== */
+@media (max-width: 768px) {
+  .lux-shop-header {
+    padding: 60px 0 40px;
+  }
+
+  .shop-controls-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .shop-search-wrapper {
+    max-width: 100%;
+  }
+
+  .shop-count-indicator {
+    text-align: center;
+  }
+
+  .lux-shop-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+  }
 }
