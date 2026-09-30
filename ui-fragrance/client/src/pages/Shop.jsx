@@ -32,12 +32,10 @@ const Shop = () => {
   const handleClearSearch = () => setSearchTerm('');
 
   return (
-    <div className="lux-shop-page page-fade">
-      {/* Ambient Top Glow */}
-      <div className="shop-ambient-glow"></div>
-
-      {/* --- 1. LUXURY HERO HEADER --- */}
-      <div className="lux-shop-header text-center">
+    <div className="lux-shop-page">
+      {/* 1. HERO HEADER */}
+      <section className="lux-shop-header text-center">
+        <div className="shop-ambient-glow"></div>
         <div className="container">
           <span className="shop-badge">Artisanal Olfactory Catalog</span>
           <h1 className="shop-main-title">
@@ -47,11 +45,10 @@ const Shop = () => {
             Explore the full UI Fragrance library — every creation a sublime ode to timeless elegance, rare botanicals, and distinct individuality.
           </p>
         </div>
-      </div>
+      </section>
 
-      {/* --- 2. SEARCH & BODY CONTAINER --- */}
+      {/* 2. MAIN CATALOG BODY */}
       <div className="container shop-body-container">
-        
         {/* Search & Counter Bar */}
         <div className="shop-controls-bar">
           <div className="shop-search-wrapper">
@@ -85,7 +82,7 @@ const Shop = () => {
           )}
         </div>
 
-        {/* --- 3. PRODUCTS GRID & STATES --- */}
+        {/* 3. PRODUCTS GRID & STATES */}
         {loading ? (
           <div className="shop-loader-wrapper">
             <div className="shop-gold-spinner"></div>
@@ -111,7 +108,6 @@ const Shop = () => {
             ))}
           </div>
         )}
-
       </div>
     </div>
   );
