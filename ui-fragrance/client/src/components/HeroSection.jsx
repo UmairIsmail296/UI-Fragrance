@@ -7,19 +7,19 @@ const SLIDES = [
     name: 'Aethel',
     sub: 'The Essence of Mystery',
     desc: 'Where midnight woods meet an enigmatic aura — boldly unforgettable.',
-    img: 'https://images.pexels.com/photos/36834269/pexels-photo-36834269.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920',
+    img: '/IMG_E1379.JPG',
   },
   {
     name: 'Morning Dew',
     sub: 'Nature\'s First Breath',
     desc: 'Dawn-kissed petals on crisp morning air — freshness distilled to perfection.',
-    img: 'https://images.pexels.com/photos/6945831/pexels-photo-6945831.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920',
+    img: '/IMG_E1195.JPG',
   },
   {
     name: 'Rose Noir',
     sub: 'A Dark Romance',
     desc: 'Opulent rose wrapped in mysterious oud — femininity redefined.',
-    img: 'https://images.pexels.com/photos/7814722/pexels-photo-7814722.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=1080&w=1920',
+    img: '/IMG_E1385.JPG',
   },
 ];
 
