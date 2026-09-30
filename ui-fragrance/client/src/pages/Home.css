@@ -1,42 +1,276 @@
-.featured-section {
-  padding: 100px 24px 60px;
+/* ==========================================================================
+   MINIMALIST EDITORIAL HOME PAGE STYLES
+   ========================================================================== */
+
+:root {
+  --lux-gold: #d4af37;
+  --lux-gold-light: #f5e7a9;
+  --lux-gold-glow: rgba(212, 175, 55, 0.15);
+  --lux-bg-dark: #080808;
+  --lux-bg-card: rgba(20, 20, 20, 0.65);
+  --lux-border: rgba(212, 175, 55, 0.16);
+  --lux-border-hover: rgba(212, 175, 55, 0.45);
+  --font-serif: 'Cinzel', 'Playfair Display', Georgia, serif;
 }
 
-.featured-grid {
+.lux-home-page {
+  background-color: var(--lux-bg-dark);
+  color: #e5e5e5;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Ambient Radial Glows */
+.home-ambient-glow {
+  position: absolute;
+  width: 650px;
+  height: 450px;
+  background: radial-gradient(circle, var(--lux-gold-glow) 0%, transparent 75%);
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.home-ambient-glow.top-glow {
+  top: 15%;
+  right: -100px;
+}
+
+.home-ambient-glow.bottom-glow {
+  bottom: 5%;
+  left: -200px;
+}
+
+.lux-home-page .container {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   1. FEATURED COLLECTION SECTION
+   ========================================================================== */
+.lux-featured-section {
+  padding: 100px 0 80px;
+  position: relative;
+}
+
+.featured-section-header {
+  margin-bottom: 50px;
+}
+
+.featured-badge,
+.promise-badge {
+  display: inline-block;
+  padding: 5px 16px;
+  border-radius: 40px;
+  border: 1px solid var(--lux-border);
+  background: rgba(212, 175, 55, 0.06);
+  color: var(--lux-gold);
+  font-size: 0.75rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.featured-main-title {
+  font-family: var(--font-serif);
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  color: #ffffff;
+  font-weight: 400;
+  letter-spacing: 1px;
+  margin-bottom: 16px;
+}
+
+.featured-main-title span {
+  font-style: italic;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lux-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.featured-subtitle {
+  color: #999999;
+  font-size: 1.05rem;
+  max-width: 650px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* Featured Products Grid */
+.lux-featured-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 28px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 36px;
+  justify-content: center;
 }
 
-.promise-section {
-  background: var(--color-bg-secondary);
-  padding: 70px 0;
-  margin-top: 60px;
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
+/* Layout Adjustment for Max 5 Items */
+@media (min-width: 1200px) {
+  .lux-featured-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+  }
 }
 
-.promise-grid {
+.lux-card-reveal-wrapper {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lux-card-reveal-wrapper:hover {
+  transform: translateY(-8px);
+}
+
+/* ==========================================================================
+   2. BRAND PROMISE SECTION
+   ========================================================================== */
+.lux-promise-section {
+  background: linear-gradient(180deg, #0d0d0d 0%, #050505 100%);
+  padding: 90px 0;
+  border-top: 1px solid var(--lux-border);
+  border-bottom: 1px solid var(--lux-border);
+  position: relative;
+}
+
+.promise-section-header {
+  margin-bottom: 50px;
+}
+
+.promise-title {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: #ffffff;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+.promise-title span {
+  font-style: italic;
+  background: linear-gradient(135deg, #ffffff 0%, var(--lux-gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Promise Grid & Glass Cards */
+.lux-promise-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 40px;
-  text-align: center;
+  gap: 30px;
 }
 
-.promise-item h3 {
-  color: var(--color-gold);
-  font-size: 1.2rem;
+.lux-promise-card {
+  background: var(--lux-bg-card);
+  border: 1px solid var(--lux-border);
+  border-radius: 16px;
+  padding: 40px 30px;
+  text-align: center;
+  backdrop-filter: blur(12px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lux-promise-card:hover {
+  transform: translateY(-6px);
+  border-color: var(--lux-border-hover);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 20px var(--lux-gold-glow);
+}
+
+.promise-card-icon {
+  display: block;
+  font-size: 2rem;
+  color: var(--lux-gold);
+  margin-bottom: 20px;
+  text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+}
+
+.promise-card-title {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: #ffffff;
+  font-weight: 500;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.promise-card-desc {
+  color: #8c8c8c;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* ==========================================================================
+   3. LOADING & EMPTY STATES
+   ========================================================================== */
+.lux-home-loader {
+  text-align: center;
+  padding: 80px 0;
+}
+
+.lux-spinner-ring {
+  width: 44px;
+  height: 44px;
+  border: 3px solid rgba(212, 175, 55, 0.1);
+  border-top-color: var(--lux-gold);
+  border-radius: 50%;
+  animation: homeSpin 0.9s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes homeSpin {
+  to { transform: rotate(360deg); }
+}
+
+.lux-home-loader p {
+  color: var(--lux-gold);
+  font-size: 0.9rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+.lux-home-empty {
+  padding: 60px 24px;
+  background: var(--lux-bg-card);
+  border: 1px dashed var(--lux-border);
+  border-radius: 16px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.empty-sparkle {
+  font-size: 2rem;
+  color: var(--lux-gold);
   margin-bottom: 10px;
 }
 
-.promise-item p {
-  color: var(--color-text-muted);
-  font-size: 0.88rem;
+.lux-home-empty p {
+  color: #8c8c8c;
+  font-size: 0.95rem;
+  margin: 0;
 }
 
-@media (max-width: 760px) {
-  .promise-grid {
+/* ==========================================================================
+   RESPONSIVE DESIGN (MOBILE & TABLETS)
+   ========================================================================== */
+@media (max-width: 991px) {
+  .lux-promise-grid {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .lux-featured-section {
+    padding: 60px 0 40px;
+  }
+
+  .lux-promise-section {
+    padding: 60px 0;
+  }
+
+  .featured-main-title {
+    margin-bottom: 10px;
   }
 }
