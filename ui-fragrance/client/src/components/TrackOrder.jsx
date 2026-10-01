@@ -6,9 +6,7 @@ import './TrackOrder.css';
 
 const TRACKING_ID_PATTERN = /^UIF-[A-Z0-9]{6}$/i;
 const fetchTrackedOrder = async (trackingId) => {
-  const { data } = await api.get(`/orders/track/${trackingId}`, {
-    headers: { 'Cache-Control': 'no-cache' },
-  });
+  const { data } = await api.get(`/orders/track/${trackingId}`);
   return data;
 };
 

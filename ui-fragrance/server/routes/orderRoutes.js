@@ -135,15 +135,15 @@ router.get('/track/:orderId', async (req, res) => {
   try {
     const rawId = req.params.orderId.trim();
     const escaped = rawId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const trackingIdPattern = new RegExp(`^${escaped}$`, 'i');
 
-    const order = await Order.findOne({ orderId: { $regex: trackingIdPattern } }).lean()
-      || await Order.collection.findOne({ trackingId: trackingIdPattern });
+    const order = await Order.findOne({
+      orderId: { $regex: new RegExp(`^${escaped}$`, 'i') },
+    });
 
     if (!order) {
       return res.status(404).json({ message: 'No order found with this Tracking ID' });
     }
-    const trackedOrder = { ...order };
+    const trackedOrder = order.toObject();
     trackedOrder.orderStatus = formatOrderStatus(trackedOrder.status || trackedOrder.orderStatus);
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.status(200).json(trackedOrder);
