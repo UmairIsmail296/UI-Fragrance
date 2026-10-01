@@ -2,14 +2,17 @@ import React from 'react';
 import './OrderStepper.css';
 
 const STEPS = [
-  'Order Placed',
-  'Order Confirmed',
-  'Dispatched',
-  'Out for Delivery',
+  'Pending',
+  'Processing',
+  'Shipped',
   'Delivered',
 ];
 
 const OrderStepper = ({ currentStatus }) => {
+  if (currentStatus === 'Cancelled') {
+    return <div className="order-stepper">Order Cancelled</div>;
+  }
+
   const currentIndex = STEPS.indexOf(currentStatus);
 
   return (

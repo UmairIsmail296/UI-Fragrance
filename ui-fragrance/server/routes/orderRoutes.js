@@ -6,13 +6,26 @@ const generateTrackingId = require('../utils/generateTrackingId');
 const { protectAdmin } = require('../middleware/authMiddleware');
 const { sendOrderConfirmationEmail } = require('../utils/sendEmail');
 
-const getTrackingStatus = (order) => {
-  const status = String(order.orderStatus || order.status || '').toLowerCase();
-  if (status.includes('out for delivery')) return 'Out for Delivery';
-  if (status.includes('deliver')) return 'Delivered';
-  if (status.includes('dispatch') || status.includes('ship')) return 'Dispatched';
-  if (status.includes('confirm') || status.includes('process')) return 'Order Confirmed';
-  return 'Order Placed';
+const normalizeOrderStatus = (value) => {
+  const status = String(value || '').trim().toLowerCase();
+  const statuses = {
+    pending: 'pending',
+    'order placed': 'pending',
+    processing: 'processing',
+    'order confirmed': 'processing',
+    shipped: 'shipped',
+    dispatched: 'shipped',
+    'out for delivery': 'shipped',
+    delivered: 'delivered',
+    cancelled: 'cancelled',
+    canceled: 'cancelled',
+  };
+  return statuses[status] || null;
+};
+
+const formatOrderStatus = (value) => {
+  const status = normalizeOrderStatus(value) || 'pending';
+  return status.charAt(0).toUpperCase() + status.slice(1);
 };
 
 // @route   POST /api/orders
@@ -96,7 +109,7 @@ router.post('/', async (req, res) => {
       customerArea,
       items: orderItems,
       totalAmount,
-      orderStatus: 'Order Placed',
+      status: 'pending',
     });
 
     const emailSent = await sendOrderConfirmationEmail(order);
@@ -131,7 +144,8 @@ router.get('/track/:orderId', async (req, res) => {
       return res.status(404).json({ message: 'No order found with this Tracking ID' });
     }
     const trackedOrder = order.toObject();
-    trackedOrder.orderStatus = getTrackingStatus(trackedOrder);
+    trackedOrder.orderStatus = formatOrderStatus(trackedOrder.status || trackedOrder.orderStatus);
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.status(200).json(trackedOrder);
   } catch (error) {
     res.status(500).json({ message: 'Server error while tracking order', error: error.message });
@@ -144,7 +158,11 @@ router.get('/track/:orderId', async (req, res) => {
 router.get('/', protectAdmin, async (req, res) => {
   try {
     const orders = await Order.find().sort({ createdAt: -1 });
-    res.status(200).json(orders);
+    res.status(200).json(orders.map((order) => {
+      const orderData = order.toObject();
+      orderData.orderStatus = formatOrderStatus(orderData.status || orderData.orderStatus);
+      return orderData;
+    }));
   } catch (error) {
     res.status(500).json({ message: 'Server error while fetching orders', error: error.message });
   }
@@ -156,15 +174,8 @@ router.get('/', protectAdmin, async (req, res) => {
 router.put('/:id/status', protectAdmin, async (req, res) => {
   try {
     const { orderStatus } = req.body;
-    const validStatuses = [
-      'Order Placed',
-      'Order Confirmed',
-      'Dispatched',
-      'Out for Delivery',
-      'Delivered',
-    ];
-
-    if (!validStatuses.includes(orderStatus)) {
+    const normalizedStatus = normalizeOrderStatus(orderStatus);
+    if (!normalizedStatus) {
       return res.status(400).json({ message: 'Invalid order status' });
     }
 
@@ -173,10 +184,12 @@ router.put('/:id/status', protectAdmin, async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    order.orderStatus = orderStatus;
+    order.status = normalizedStatus;
     await order.save();
 
-    res.status(200).json(order);
+    const updatedOrder = order.toObject();
+    updatedOrder.orderStatus = formatOrderStatus(updatedOrder.status);
+    res.status(200).json(updatedOrder);
   } catch (error) {
     res.status(500).json({ message: 'Server error while updating order status', error: error.message });
   }

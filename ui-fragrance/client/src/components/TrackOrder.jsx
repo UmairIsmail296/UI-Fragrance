@@ -1,17 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import api from '../utils/api.js';
 import OrderStepper from './OrderStepper.jsx';
 import './TrackOrder.css';
 
 const TRACKING_ID_PATTERN = /^UIF-[A-Z0-9]{6}$/i;
+const fetchTrackedOrder = async (trackingId) => {
+  const { data } = await api.get(`/orders/track/${trackingId}`, {
+    headers: { 'Cache-Control': 'no-cache' },
+  });
+  return data;
+};
 
 const TrackOrder = () => {
   const [orderIdInput, setOrderIdInput] = useState('');
+  const [activeTrackingId, setActiveTrackingId] = useState('');
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!activeTrackingId) return undefined;
+
+    const intervalId = window.setInterval(async () => {
+      try {
+        setOrder(await fetchTrackedOrder(activeTrackingId));
+      } catch {
+        setOrder(null);
+        setActiveTrackingId('');
+      }
+    }, 15000);
+
+    return () => window.clearInterval(intervalId);
+  }, [activeTrackingId]);
 
   const handleTrack = async (e) => {
     e.preventDefault();
@@ -29,11 +51,13 @@ const TrackOrder = () => {
 
     setLoading(true);
     setSearched(true);
+    setOrder(null);
+    setActiveTrackingId(trimmed);
     try {
-      const { data } = await api.get(`/orders/track/${trimmed}`);
-      setOrder(data);
+      setOrder(await fetchTrackedOrder(trimmed));
     } catch (error) {
       setOrder(null);
+      setActiveTrackingId('');
       const message = error.response?.data?.message || 'Order not found';
       toast.error(message);
     } finally {

@@ -3,11 +3,11 @@ import { toast } from 'react-toastify';
 import api from '../../utils/api.js';
 
 const STATUS_OPTIONS = [
-  'Order Placed',
-  'Order Confirmed',
-  'Dispatched',
-  'Out for Delivery',
+  'Pending',
+  'Processing',
+  'Shipped',
   'Delivered',
+  'Cancelled',
 ];
 
 // Builds "Velvet Oud Royale ×2, Midnight Rose ×1" for the collapsed row
@@ -41,10 +41,10 @@ const OrderManager = () => {
   const handleStatusChange = async (orderId, newStatus) => {
     setUpdatingId(orderId);
     try {
-      await api.put(`/orders/${orderId}/status`, { orderStatus: newStatus });
+      const { data } = await api.put(`/orders/${orderId}/status`, { orderStatus: newStatus });
       toast.success('Order status updated');
       setOrders((prev) =>
-        prev.map((o) => (o._id === orderId ? { ...o, orderStatus: newStatus } : o))
+        prev.map((o) => (o._id === orderId ? { ...o, ...data } : o))
       );
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update status');
@@ -142,7 +142,7 @@ const OrderManager = () => {
                       <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                       <td>
                         <select
-                          value={order.orderStatus}
+                          value={order.orderStatus || 'Pending'}
                           disabled={updatingId === order._id}
                           onChange={(e) => handleStatusChange(order._id, e.target.value)}
                           className="status-select"
