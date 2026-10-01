@@ -142,7 +142,7 @@ const PerfumeDetail = () => {
     try {
       setReviewUploading(true);
       const uploadedUrls = await Promise.all(
-        acceptedFiles.map(async (file) => uploadToCloudinary(file, 'ui-fragrance/reviews/photos'))
+        acceptedFiles.map((file) => uploadToCloudinary(file))
       );
 
       setReviewForm((prev) => ({

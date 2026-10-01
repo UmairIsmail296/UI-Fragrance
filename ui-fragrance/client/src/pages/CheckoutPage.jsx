@@ -82,7 +82,7 @@ const CheckoutPage = () => {
       });
 
       clearCart();
-      navigate('/order-success', { state: { orderId: data.order.orderId } });
+      navigate('/order-success', { state: { trackingId: data.order.orderId } });
     } catch (error) {
       const message = error.response?.data?.message || 'Something went wrong. Please try again.';
       toast.error(message);

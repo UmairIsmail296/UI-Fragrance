@@ -3,7 +3,10 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const Review = require('../models/Review');
 const uploadMiddleware = require('../middleware/uploadMiddleware');
-const { deleteCloudinaryAsset } = uploadMiddleware;
+const { deleteCloudinaryAsset, uploadToCloudinary } = uploadMiddleware;
+const upload = uploadMiddleware;
+
+const REVIEW_PHOTO_MAX_BYTES = 5 * 1024 * 1024;
 
 const normalizePhotoUrls = (value) => {
   if (Array.isArray(value)) {
@@ -55,6 +58,27 @@ router.get('/perfume/:perfumeId', async (req, res) => {
     return res.status(200).json(reviews);
   } catch (error) {
     return res.status(500).json({ message: 'Server error while fetching perfume reviews', error: error.message });
+  }
+});
+
+router.post('/upload', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image uploaded' });
+    }
+
+    if (req.file.size > REVIEW_PHOTO_MAX_BYTES) {
+      return res.status(413).json({ message: 'Review photos must be 5 MB or smaller.' });
+    }
+
+    const url = await uploadToCloudinary(req.file, 'ui-fragrance/reviews/photos');
+    if (!url) {
+      return res.status(500).json({ message: 'Cloudinary upload failed' });
+    }
+
+    return res.status(200).json({ url });
+  } catch (error) {
+    return res.status(500).json({ message: 'Server error while uploading review photo', error: error.message });
   }
 });
 

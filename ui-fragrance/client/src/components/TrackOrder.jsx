@@ -55,6 +55,12 @@ const TrackOrder = () => {
     return 'status-processing';
   };
 
+  const orderItems = Array.isArray(order?.items) ? order.items : [];
+  const totalQuantity = orderItems.reduce((total, item) => {
+    const quantity = Number(item.quantity);
+    return total + (Number.isFinite(quantity) ? quantity : 0);
+  }, 0);
+
   return (
     <div className="track-order-container">
       {/* Header Info */}
@@ -131,7 +137,11 @@ const TrackOrder = () => {
           <div className="order-meta-grid">
             <div className="meta-box perfume-highlight">
               <span className="meta-label">Selected Fragrance</span>
-              <h3 className="perfume-name">{order.selectedPerfume}</h3>
+              <h3 className="perfume-name">
+                {orderItems.length
+                  ? orderItems.map((item) => `${item.perfumeName} (Qty ${item.quantity}, Rs. ${Number(item.unitPrice).toLocaleString('en-PK')} each)`).join('; ')
+                  : order.selectedPerfume || '—'}
+              </h3>
             </div>
 
             <div className="meta-box">
@@ -144,12 +154,16 @@ const TrackOrder = () => {
           <div className="financial-strip">
             <div className="strip-item">
               <span className="strip-label">Quantity</span>
-              <span className="strip-val">{order.quantity} {order.quantity > 1 ? 'Bottles' : 'Bottle'}</span>
+              <span className="strip-val">{totalQuantity} {totalQuantity === 1 ? 'Bottle' : 'Bottles'}</span>
             </div>
             <div className="strip-divider"></div>
             <div className="strip-item">
               <span className="strip-label">Unit Price</span>
-              <span className="strip-val">Rs. {Number(order.unitPrice).toLocaleString('en-PK')}</span>
+              <span className="strip-val">
+                {orderItems.length === 1
+                  ? `Rs. ${Number(orderItems[0].unitPrice).toLocaleString('en-PK')}`
+                  : `${orderItems.length} item prices above`}
+              </span>
             </div>
             <div className="strip-divider"></div>
             <div className="strip-item highlight-total">

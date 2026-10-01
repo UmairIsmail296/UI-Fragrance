@@ -6,6 +6,15 @@ const generateTrackingId = require('../utils/generateTrackingId');
 const { protectAdmin } = require('../middleware/authMiddleware');
 const { sendOrderConfirmationEmail } = require('../utils/sendEmail');
 
+const getTrackingStatus = (order) => {
+  const status = String(order.orderStatus || order.status || '').toLowerCase();
+  if (status.includes('out for delivery')) return 'Out for Delivery';
+  if (status.includes('deliver')) return 'Delivered';
+  if (status.includes('dispatch') || status.includes('ship')) return 'Dispatched';
+  if (status.includes('confirm') || status.includes('process')) return 'Order Confirmed';
+  return 'Order Placed';
+};
+
 // @route   POST /api/orders
 // @desc    Place a new multi-item order. Accepts an `items` array of
 //          { perfumeId, quantity }. unitPrice/perfumeName are NOT trusted
@@ -121,7 +130,9 @@ router.get('/track/:orderId', async (req, res) => {
     if (!order) {
       return res.status(404).json({ message: 'No order found with this Tracking ID' });
     }
-    res.status(200).json(order);
+    const trackedOrder = order.toObject();
+    trackedOrder.orderStatus = getTrackingStatus(trackedOrder);
+    res.status(200).json(trackedOrder);
   } catch (error) {
     res.status(500).json({ message: 'Server error while tracking order', error: error.message });
   }
