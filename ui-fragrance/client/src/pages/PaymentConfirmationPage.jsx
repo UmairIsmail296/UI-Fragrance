@@ -10,8 +10,8 @@ const MAX_SCREENSHOT_SIZE = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const BANK_DETAILS = {
   bankName: 'Meezan Bank',
-  accountName: 'Add account name',
-  accountNumber: 'Add account number',
+  accountName: 'MUHAMMAD IBSHAM FAYYAZ',
+  accountNumber: '98270112334414',
 };
 
 const PaymentConfirmationPage = () => {
