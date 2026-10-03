@@ -23,6 +23,7 @@ import AboutUs from './pages/AboutUs.jsx';
 import TrackOrderPage from './pages/TrackOrderPage.jsx';
 import CartPage from './pages/CartPage.jsx'; // NEW
 import CheckoutPage from './pages/CheckoutPage.jsx'; // NEW
+import PaymentConfirmationPage from './pages/PaymentConfirmationPage.jsx';
 import OrderSuccessPage from './pages/OrderSuccessPage.jsx'; // NEW
 import AdminLogin from './pages/AdminLogin.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
@@ -89,6 +90,7 @@ function App() {
             {/* NEW: cart / checkout / order success routes (Change 3) */}
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/payment-confirmation" element={<PaymentConfirmationPage />} />
             <Route path="/order-success" element={<OrderSuccessPage />} />
             <Route
               path="*"

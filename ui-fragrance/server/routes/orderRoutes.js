@@ -5,6 +5,11 @@ const Perfume = require('../models/Perfume');
 const generateTrackingId = require('../utils/generateTrackingId');
 const { protectAdmin } = require('../middleware/authMiddleware');
 const { sendOrderConfirmationEmail } = require('../utils/sendEmail');
+const uploadMiddleware = require('../middleware/uploadMiddleware');
+const upload = uploadMiddleware;
+const { uploadToCloudinary } = uploadMiddleware;
+
+const PAYMENT_SCREENSHOT_MAX_BYTES = 5 * 1024 * 1024;
 
 const normalizeOrderStatus = (value) => {
   const status = String(value || '').trim().toLowerCase();
@@ -34,7 +39,7 @@ const formatOrderStatus = (value) => {
 //          from the client — each perfumeId is looked up server-side so a
 //          tampered request body can never change what the customer is charged.
 // @access  Public
-router.post('/', async (req, res) => {
+router.post('/', upload.single('paymentScreenshot'), async (req, res) => {
   try {
     const {
       customerName,
@@ -44,6 +49,14 @@ router.post('/', async (req, res) => {
       customerArea,
       items,
     } = req.body;
+
+    if (!req.file) {
+      return res.status(400).json({ message: 'A payment screenshot is required to place an order' });
+    }
+
+    if (req.file.size > PAYMENT_SCREENSHOT_MAX_BYTES) {
+      return res.status(413).json({ message: 'Payment screenshots must be 5 MB or smaller.' });
+    }
 
     if (!customerName || !customerEmail || !customerMobile || !customerCity || !customerArea) {
       return res.status(400).json({ message: 'All customer details are required' });
@@ -59,12 +72,21 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ message: 'Mobile number must contain only digits' });
     }
 
-    if (!Array.isArray(items) || items.length === 0) {
+    let parsedItems = items;
+    if (typeof parsedItems === 'string') {
+      try {
+        parsedItems = JSON.parse(parsedItems);
+      } catch {
+        return res.status(400).json({ message: 'Order items are invalid' });
+      }
+    }
+
+    if (!Array.isArray(parsedItems) || parsedItems.length === 0) {
       return res.status(400).json({ message: 'Your cart is empty' });
     }
 
     const orderItems = [];
-    for (const rawItem of items) {
+    for (const rawItem of parsedItems) {
       const { perfumeId, quantity } = rawItem;
 
       const parsedQuantity = parseInt(quantity, 10);
@@ -98,6 +120,14 @@ router.post('/', async (req, res) => {
 
     const totalAmount = orderItems.reduce((sum, item) => sum + item.subtotal, 0);
 
+    const paymentScreenshotUrl = await uploadToCloudinary(
+      req.file,
+      'ui-fragrance/payment-screenshots'
+    );
+    if (!paymentScreenshotUrl) {
+      return res.status(500).json({ message: 'Payment screenshot upload failed' });
+    }
+
     const orderId = await generateTrackingId(Order);
 
     const order = await Order.create({
@@ -109,6 +139,7 @@ router.post('/', async (req, res) => {
       customerArea,
       items: orderItems,
       totalAmount,
+      paymentScreenshotUrl,
       status: 'pending',
     });
 
@@ -144,6 +175,7 @@ router.get('/track/:orderId', async (req, res) => {
       return res.status(404).json({ message: 'No order found with this Tracking ID' });
     }
     const trackedOrder = order.toObject();
+    delete trackedOrder.paymentScreenshotUrl;
     trackedOrder.orderStatus = formatOrderStatus(trackedOrder.status || trackedOrder.orderStatus);
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.status(200).json(trackedOrder);

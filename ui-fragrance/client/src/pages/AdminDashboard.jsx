@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import PerfumeManager from '../components/admin/PerfumeManager.jsx';
 import OrderManager from '../components/admin/OrderManager.jsx';
+import ReviewManager from '../components/admin/ReviewManager.jsx';
 import AnalyticsDashboard from '../components/AnalyticsDashboard.jsx';
 import './AdminDashboard.css';
 
@@ -33,10 +34,13 @@ function AdminDashboard() {
       <div className="admin-tabs container">
         <button className={`admin-tab ${activeTab === 'perfumes' ? 'active' : ''}`} onClick={() => setActiveTab('perfumes')}>Perfumes</button>
         <button className={`admin-tab ${activeTab === 'orders' ? 'active' : ''}`} onClick={() => setActiveTab('orders')}>Orders</button>
+        <button className={`admin-tab ${activeTab === 'reviews' ? 'active' : ''}`} onClick={() => setActiveTab('reviews')}>Reviews</button>
       </div>
 
       <main className="container admin-main">
-        {activeTab === 'perfumes' ? <PerfumeManager /> : <OrderManager />}
+        {activeTab === 'perfumes' && <PerfumeManager />}
+        {activeTab === 'orders' && <OrderManager />}
+        {activeTab === 'reviews' && <ReviewManager />}
       </main>
     </div>
   );

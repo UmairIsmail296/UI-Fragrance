@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useCart } from '../context/CartContext.jsx';
 import { formatPrice, toNumericPrice } from '../utils/price.js'; // FIXED: shared price helpers
-import api from '../utils/api.js';
 import { resolveAssetUrl } from '../utils/api.js';
 import './CheckoutPage.css';
 
@@ -15,17 +14,13 @@ const initialForm = {
   area: '',
 };
 
-// No online payment / COD split exists in this build, so shipping is a
-// simple flat constant — set to a number (e.g. 100) instead of 0 if you
-// want a delivery charge applied to every order.
 const SHIPPING_FEE = 0;
 
 const CheckoutPage = () => {
-  const { cartItems, getTotalPrice, clearCart } = useCart();
+  const { cartItems, getTotalPrice } = useCart();
   const navigate = useNavigate();
   const [form, setForm] = useState(initialForm);
   const [errors, setErrors] = useState({});
-  const [submitting, setSubmitting] = useState(false);
 
   // Redirect to /cart if the cart is empty (e.g. direct navigation to /checkout)
   useEffect(() => {
@@ -58,7 +53,7 @@ const CheckoutPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e) => {
+  const handleContinueToPayment = (e) => {
     e.preventDefault();
     if (cartItems.length === 0) {
       toast.error('Your cart is empty.');
@@ -67,28 +62,17 @@ const CheckoutPage = () => {
     }
     if (!validate()) return;
 
-    setSubmitting(true);
-    try {
-      const { data } = await api.post('/orders', {
-        customerName: form.fullName,
-        customerEmail: form.email,
-        customerMobile: form.mobile,
-        customerCity: form.city,
-        customerArea: form.area,
-        items: cartItems.map((item) => ({
-          perfumeId: item.perfumeId,
-          quantity: item.quantity,
-        })),
-      });
-
-      clearCart();
-      navigate('/order-success', { state: { trackingId: data.order.orderId } });
-    } catch (error) {
-      const message = error.response?.data?.message || 'Something went wrong. Please try again.';
-      toast.error(message);
-    } finally {
-      setSubmitting(false);
-    }
+    navigate('/payment-confirmation', {
+      state: {
+        customer: {
+          fullName: form.fullName.trim(),
+          email: form.email.trim(),
+          mobile: form.mobile.trim(),
+          city: form.city.trim(),
+          area: form.area.trim(),
+        },
+      },
+    });
   };
 
   if (cartItems.length === 0) return null; // redirect effect handles this
@@ -117,7 +101,7 @@ const CheckoutPage = () => {
             <div className="checkout-form-card">
               <h2 className="checkout-section-title">Shipping Information</h2>
 
-              <form onSubmit={handleSubmit} noValidate>
+              <form onSubmit={handleContinueToPayment} noValidate>
                 <div className="checkout-field">
                   <label htmlFor="fullName">Full Name *</label>
                   <input
@@ -197,9 +181,8 @@ const CheckoutPage = () => {
                 <button
                   type="submit"
                   className="checkout-place-order-btn checkout-place-order-btn-mobile"
-                  disabled={submitting}
                 >
-                  {submitting ? <span className="spinner small"></span> : 'Place Order'}
+                  Place Order
                 </button>
               </form>
             </div>
@@ -259,11 +242,10 @@ const CheckoutPage = () => {
 
               <button
                 type="button"
-                onClick={handleSubmit}
+                onClick={handleContinueToPayment}
                 className="checkout-place-order-btn checkout-place-order-btn-desktop"
-                disabled={submitting}
               >
-                {submitting ? <span className="spinner small"></span> : 'Place Order'}
+                Place Order
               </button>
             </div>
           </div>

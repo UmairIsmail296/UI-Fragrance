@@ -108,6 +108,7 @@ const OrderManager = () => {
                     Perfume / Quantity / Unit Price columns — click to expand */}
                 <th>Items</th>
                 <th>Total Amount</th>
+                <th>Payment Proof</th>
                 <th>Date</th>
                 <th>Order Status</th>
                 <th>Actions</th>
@@ -139,6 +140,26 @@ const OrderManager = () => {
                         {summarizeItems(order.items)}
                       </td>
                       <td>Rs. {Number(order.totalAmount).toLocaleString('en-PK')}</td>
+                      <td>
+                        {order.paymentScreenshotUrl ? (
+                          <a
+                            className="order-payment-proof"
+                            href={order.paymentScreenshotUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`View payment screenshot for order ${order.orderId}`}
+                            title={`Payment screenshot for ${order.orderId}`}
+                          >
+                            <img
+                              src={order.paymentScreenshotUrl}
+                              alt={`Payment screenshot for order ${order.orderId}`}
+                            />
+                            <span>View proof</span>
+                          </a>
+                        ) : (
+                          <span className="payment-proof-missing">Not available</span>
+                        )}
+                      </td>
                       <td>{new Date(order.createdAt).toLocaleDateString()}</td>
                       <td>
                         <select
@@ -171,7 +192,7 @@ const OrderManager = () => {
                     {isExpanded && (
                       <tr className="items-expanded-row">
                         <td></td>
-                        <td colSpan={10}>
+                        <td colSpan={12}>
                           <table className="items-detail-table">
                             <thead>
                               <tr>
@@ -200,7 +221,7 @@ const OrderManager = () => {
               })}
               {orders.length === 0 && (
                 <tr>
-                  <td colSpan={11} className="text-center">No orders placed yet.</td>
+                  <td colSpan={13} className="text-center">No orders placed yet.</td>
                 </tr>
               )}
             </tbody>

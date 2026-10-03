@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const Review = require('../models/Review');
+const { protectAdmin } = require('../middleware/authMiddleware');
 const uploadMiddleware = require('../middleware/uploadMiddleware');
 const { deleteCloudinaryAsset, uploadToCloudinary } = uploadMiddleware;
 const upload = uploadMiddleware;
@@ -122,8 +123,12 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', protectAdmin, async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: 'Valid review ID is required' });
+    }
+
     const review = await Review.findById(req.params.id);
     if (!review) {
       return res.status(404).json({ message: 'Review not found' });

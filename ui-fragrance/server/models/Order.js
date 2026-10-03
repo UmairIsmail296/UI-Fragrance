@@ -53,6 +53,10 @@ const orderSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    paymentScreenshotUrl: {
+      type: String,
+      trim: true,
+    },
     status: {
       type: String,
       enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],

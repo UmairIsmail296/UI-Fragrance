@@ -166,6 +166,55 @@
   border: 1px solid var(--color-border);
 }
 
+.order-payment-proof {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-gold);
+}
+
+.order-payment-proof img {
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.order-payment-proof span {
+  font-size: 0.75rem;
+}
+
+.payment-proof-missing {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.admin-reviews-table {
+  min-width: 900px;
+}
+
+.admin-reviews-table .review-comment-cell {
+  min-width: 240px;
+  max-width: 420px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+
+.review-photo-list {
+  display: flex;
+  gap: 6px;
+}
+
+.review-photo-list img {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  object-fit: cover;
+}
+
 .admin-table-actions {
   display: flex;
   gap: 8px;
