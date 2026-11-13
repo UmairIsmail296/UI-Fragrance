@@ -63,11 +63,11 @@ export default function HeroSection() {
             </p>
 
             <h1 id="hero-title">
-              A little
+              Luxury &amp;
               <br />
-              closer to
+              Long Lasting
               <br />
-              <em>nature.</em>
+              <em>Perfumes in Pakistan</em>
             </h1>
 
             <div className="scent-hero__intro">
@@ -191,7 +191,11 @@ export default function HeroSection() {
                 {fragrance.number}
               </span>
 
-              <img src={fragrance.image} alt="" loading="lazy" />
+              <img
+                src={fragrance.image}
+                alt={`${fragrance.name} perfume`}
+                loading="lazy"
+              />
 
               <span className="scent-hero__collection-text">
                 <strong>{fragrance.name}</strong>

@@ -2,6 +2,10 @@
   "buildCommand": "npm install --prefix ui-fragrance/client && npm run build --prefix ui-fragrance/client",
   "outputDirectory": "ui-fragrance/client/dist",
   "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://ui-fragrance-backend.vercel.app/sitemap.xml"
+    },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

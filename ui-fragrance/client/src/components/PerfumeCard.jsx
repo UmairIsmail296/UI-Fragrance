@@ -42,7 +42,7 @@ const PerfumeCard = ({ perfume, className = '' }) => {
         <div className="perfume-card__image">
           <img
             src={resolveAssetUrl(mainPhoto)}
-            alt={perfume.name}
+            alt={`${perfume.name} - Long lasting perfume in Pakistan`}
             loading="lazy"
           />
 

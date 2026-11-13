@@ -4,6 +4,8 @@ import { toast } from 'react-toastify';
 import api, { resolveAssetUrl } from '../utils/api.js';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
 import { useCart } from '../context/CartContext.jsx';
+import SEO from '../components/SEO.jsx';
+import ProductSchema from '../components/ProductSchema.jsx';
 import './PerfumeDetail.css';
 
 const MAX_REVIEW_PHOTOS = 3;
@@ -224,6 +226,14 @@ const PerfumeDetail = () => {
 
   return (
     <main className="lux-detail-page">
+      <SEO
+        title={`${perfume.name} - Long Lasting Perfume in Pakistan | UI Fragrance`}
+        description={`${perfume.description} Shop ${perfume.name}, a long lasting perfume in Pakistan from UI Fragrance.`}
+        keywords={`${perfume.name}, ${perfume.name} perfume in Pakistan, long lasting perfumes in Pakistan, UI Fragrance`}
+        canonical={`/product/${perfume._id}`}
+        image={perfume.photos?.[0] || perfume.image}
+      />
+      <ProductSchema product={perfume} />
       <div className="container">
         <div className="detail-nav-header">
           <Link to="/shop" className="detail-back-arrow-link">
@@ -263,7 +273,7 @@ const PerfumeDetail = () => {
                 <img
                   key={activeMediaIndex}
                   src={resolveAssetUrl(activeMedia.src)}
-                  alt={perfume.name}
+                  alt={`${perfume.name} - Best perfume in Pakistan`}
                   className="canvas-main-image"
                 />
               ) : (
@@ -309,7 +319,10 @@ const PerfumeDetail = () => {
                         </span>
                       </div>
                     ) : (
-                      <img src={resolveAssetUrl(item.src)} alt="" />
+                      <img
+                        src={resolveAssetUrl(item.src)}
+                        alt={`${perfume.name} - product image ${index + 1}`}
+                      />
                     )}
                   </button>
                 ))}

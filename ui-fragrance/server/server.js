@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
 const connectDB = require('./config/db');
+const Perfume = require('./models/Perfume');
 const uploadMiddleware = require('./middleware/uploadMiddleware');
 
 dotenv.config();
@@ -42,6 +43,40 @@ app.use('/api/admin', require('./routes/adminRoutes'));
 // NEW: visitor logging (POST /api/visitors) + analytics (GET /api/analytics/*)
 app.use('/api', require('./routes/visitorRoutes'));
 // REMOVED: '/api/payments' mount — payment integration has been fully removed.
+
+const escapeXml = (value) =>
+  String(value).replace(/[<>&'"]/g, (character) => ({
+    '<': '&lt;',
+    '>': '&gt;',
+    '&': '&amp;',
+    "'": '&apos;',
+    '"': '&quot;',
+  }[character]));
+
+app.get('/sitemap.xml', async (req, res, next) => {
+  try {
+    const perfumes = await Perfume.find().select('_id').lean();
+    const urls = [
+      'https://ui-fragrance.store/',
+      'https://ui-fragrance.store/shop',
+      ...perfumes.map(
+        (perfume) =>
+          `https://ui-fragrance.store/product/${encodeURIComponent(perfume._id)}`
+      ),
+    ];
+    const sitemap = [
+      '<?xml version="1.0" encoding="UTF-8"?>',
+      '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+      ...urls.map((url) => `<url><loc>${escapeXml(url)}</loc></url>`),
+      '</urlset>',
+    ].join('');
+
+    res.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400');
+    res.type('application/xml').send(sitemap);
+  } catch (error) {
+    next(error);
+  }
+});
 
 app.get('/', (req, res) => {
   res.send('UI Fragrance API is running...');

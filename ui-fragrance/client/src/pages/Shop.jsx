@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PerfumeCard from '../components/PerfumeCard.jsx';
+import SEO from '../components/SEO.jsx';
 import api from '../utils/api.js';
 import useScrollReveal from '../hooks/useScrollReveal.js';
 import './Shop.css';
@@ -38,6 +39,12 @@ const Shop = () => {
 
   return (
     <main className="lux-shop-page">
+      <SEO
+        title="Shop Luxury & Long Lasting Perfumes in Pakistan | UI Fragrance"
+        description="Explore the UI Fragrance collection and shop luxury, long lasting perfumes in Pakistan with nationwide delivery."
+        keywords="shop perfumes in Pakistan, long lasting perfumes, luxury perfume collection, UI Fragrance"
+        canonical="/shop"
+      />
       <section className="lux-shop-header" aria-labelledby="shop-heading">
         <div className="container">
           <span className="shop-badge">UI Fragrance</span>
