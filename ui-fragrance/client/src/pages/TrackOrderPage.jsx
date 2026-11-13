@@ -4,13 +4,11 @@ import './TrackOrderPage.css';
 
 const TrackOrderPage = () => {
   return (
-    <div className="page-fade track-page">
-     
-
+    <main className="page-fade track-page">
       <div className="container track-body">
         <TrackOrder />
       </div>
-    </div>
+    </main>
   );
 };
 

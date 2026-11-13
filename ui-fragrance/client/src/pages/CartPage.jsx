@@ -9,79 +9,84 @@ const CartPage = () => {
   const { cartItems, removeFromCart, updateQuantity, getTotalPrice } = useCart();
   const navigate = useNavigate();
 
-  // --- EMPTY CART VIEW ---
   if (cartItems.length === 0) {
     return (
-      <div className="lux-cart-page">
-        <div className="cart-ambient-glow"></div>
+      <main className="lux-cart-page">
         <div className="container">
-          <div className="cart-empty-box text-center">
-            <div className="empty-cart-vault-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <path d="M16 10a4 4 0 0 1-8 0"></path>
+          <div className="cart-empty-box">
+            <div className="empty-cart-vault-icon" aria-hidden="true">
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.4"
+              >
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
             </div>
-            <span className="cart-empty-tag">Your Vault is Empty</span>
-            <h2 className="cart-empty-title">
-              No Fragrances <span>Selected</span>
-            </h2>
+
+            <span className="cart-empty-tag">Your shopping bag</span>
+            <h1 className="cart-empty-title">Your bag is empty</h1>
             <p className="cart-empty-desc">
-              Your bag is currently empty. Explore our private collection of artisanal blends and find your signature scent today.
+              Discover our fragrance collection and find your next favorite.
             </p>
+
             <Link to="/shop" className="btn-explore-vault">
-              Explore Fragrance Vault →
+              Explore the collection <span aria-hidden="true">→</span>
             </Link>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
   const subtotal = getTotalPrice();
-  const totalItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItemCount = cartItems.reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
 
   return (
-    <div className="lux-cart-page">
-      <div className="cart-ambient-glow"></div>
-
+    <main className="lux-cart-page">
       <div className="container">
-        {/* Breadcrumb Navigation */}
         <nav className="lux-cart-breadcrumb" aria-label="Breadcrumb">
           <Link to="/">Home</Link>
-          <span className="breadcrumb-sep">/</span>
-          <Link to="/shop">Collection</Link>
-          <span className="breadcrumb-sep">/</span>
-          <span className="breadcrumb-current">Shopping Bag</span>
+          <span className="breadcrumb-sep" aria-hidden="true">/</span>
+          <Link to="/shop">Shop</Link>
+          <span className="breadcrumb-sep" aria-hidden="true">/</span>
+          <span className="breadcrumb-current" aria-current="page">
+            Shopping bag
+          </span>
         </nav>
 
-        {/* Page Title & Count Indicator */}
         <div className="cart-header-strip">
           <div>
-            <span className="cart-header-sub">Your Selection</span>
+            <span className="cart-header-sub">Your selection</span>
             <h1 className="cart-main-heading">
-              Fragrance <span>Bag</span>
+              Shopping <span>Bag</span>
             </h1>
           </div>
+
           <div className="cart-count-badge">
-            {totalItemCount} {totalItemCount === 1 ? 'Bottle' : 'Bottles'} Reserved
+            {totalItemCount} {totalItemCount === 1 ? 'item' : 'items'}
           </div>
         </div>
 
-        {/* 2-Column Cart Layout */}
         <div className="cart-layout-grid">
-          
-          {/* LEFT: Cart Items List */}
           <div className="cart-items-column">
             {cartItems.map((item) => {
               const unitPrice = toNumericPrice(item.unitPrice);
               const itemSubtotal = unitPrice * item.quantity;
 
               return (
-                <div key={item.perfumeId} className="lux-cart-card">
-                  {/* Thumbnail */}
-                  <Link to={`/perfume/${item.perfumeId}`} className="cart-item-thumb-wrapper">
+                <article key={item.perfumeId} className="lux-cart-card">
+                  <Link
+                    to={`/perfume/${item.perfumeId}`}
+                    className="cart-item-thumb-wrapper"
+                    aria-label={`View ${item.name}`}
+                  >
                     <img
                       src={resolveAssetUrl(item.mainPhoto)}
                       alt={item.name}
@@ -89,76 +94,91 @@ const CartPage = () => {
                     />
                   </Link>
 
-                  {/* Details */}
                   <div className="cart-item-body">
                     <div className="cart-item-top-row">
                       <div>
-                        <span className="item-category-label">Artisanal Extract</span>
-                        <Link to={`/perfume/${item.perfumeId}`} className="cart-item-title-link">
+                        <span className="item-category-label">Fragrance</span>
+                        <Link
+                          to={`/perfume/${item.perfumeId}`}
+                          className="cart-item-title-link"
+                        >
                           {item.name}
                         </Link>
                       </div>
 
-                      {/* Remove Button */}
                       <button
                         type="button"
                         className="cart-item-remove-btn"
                         onClick={() => removeFromCart(item.perfumeId)}
                         aria-label={`Remove ${item.name} from bag`}
-                        title="Remove Item"
+                        title="Remove item"
                       >
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                          <polyline points="3 6 5 6 21 6"></polyline>
-                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          aria-hidden="true"
+                        >
+                          <polyline points="3 6 5 6 21 6" />
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                         </svg>
                       </button>
                     </div>
 
-                    <p className="cart-unit-price-text">{formatPrice(unitPrice)} per bottle</p>
+                    <p className="cart-unit-price-text">
+                      {formatPrice(unitPrice)} per bottle
+                    </p>
 
                     <div className="cart-item-bottom-row">
-                      {/* Stepper */}
-                      <div className="lux-quantity-picker">
+                      <div
+                        className="lux-quantity-picker"
+                        role="group"
+                        aria-label={`Quantity for ${item.name}`}
+                      >
                         <button
                           type="button"
-                          onClick={() => updateQuantity(item.perfumeId, item.quantity - 1)}
+                          onClick={() =>
+                            updateQuantity(item.perfumeId, item.quantity - 1)
+                          }
                           disabled={item.quantity <= 1}
-                          aria-label="Decrease quantity"
+                          aria-label={`Decrease quantity of ${item.name}`}
                         >
                           &minus;
                         </button>
+
                         <span className="picker-qty-val">{item.quantity}</span>
+
                         <button
                           type="button"
-                          onClick={() => updateQuantity(item.perfumeId, item.quantity + 1)}
+                          onClick={() =>
+                            updateQuantity(item.perfumeId, item.quantity + 1)
+                          }
                           disabled={item.quantity >= 10}
-                          aria-label="Increase quantity"
+                          aria-label={`Increase quantity of ${item.name}`}
                         >
                           +
                         </button>
                       </div>
 
-                      {/* Item Subtotal */}
                       <div className="cart-item-subtotal-price">
                         {formatPrice(itemSubtotal)}
                       </div>
                     </div>
                   </div>
-                </div>
+                </article>
               );
             })}
 
             <Link to="/shop" className="cart-return-shop-link">
-              ← Return to Fragrance Collection
+              <span aria-hidden="true">←</span> Continue shopping
             </Link>
           </div>
 
-          {/* RIGHT: Order Summary Card */}
-          <div className="cart-summary-column">
+          <aside className="cart-summary-column" aria-label="Order summary">
             <div className="lux-summary-card">
-              <h3 className="summary-title">Order Summary</h3>
-
-              <div className="summary-divider"></div>
+              <h2 className="summary-title">Order Summary</h2>
+              <div className="summary-divider" />
 
               <div className="summary-row">
                 <span className="summary-label">Subtotal</span>
@@ -166,19 +186,21 @@ const CartPage = () => {
               </div>
 
               <div className="summary-row">
-                <span className="summary-label">Reserved Items</span>
+                <span className="summary-label">Items</span>
                 <span className="summary-value">{totalItemCount}</span>
               </div>
 
               <div className="summary-row">
-                <span className="summary-label">Nationwide Shipping</span>
-                <span className="summary-value free-delivery-pill">Complimentary</span>
+                <span className="summary-label">Nationwide shipping</span>
+                <span className="summary-value free-delivery-pill">
+                  Complimentary
+                </span>
               </div>
 
-              <div className="summary-divider"></div>
+              <div className="summary-divider" />
 
               <div className="summary-total-row">
-                <span className="total-label">Estimated Total</span>
+                <span className="total-label">Estimated total</span>
                 <span className="total-value">{formatPrice(subtotal)}</span>
               </div>
 
@@ -187,30 +209,17 @@ const CartPage = () => {
                 className="lux-checkout-action-btn"
                 onClick={() => navigate('/checkout')}
               >
-                Proceed to Checkout
+                Proceed to checkout <span aria-hidden="true">→</span>
               </button>
 
-              {/* Trust badges */}
-              <div className="summary-trust-perks">
-                <div className="trust-perk-item">
-                  <span className="perk-glyph">✦</span>
-                  <p>100% Authentic Artisanal Formulation</p>
-                </div>
-                <div className="trust-perk-item">
-                  <span className="perk-glyph">◈</span>
-                  <p>Secure Tamper-Proof VIP Packaging</p>
-                </div>
-                <div className="trust-perk-item">
-                  <span className="perk-glyph">✧</span>
-                  <p>Express Dispatch with Tracking</p>
-                </div>
-              </div>
+              <p className="summary-note">
+                Review your details on the next step.
+              </p>
             </div>
-          </div>
-
+          </aside>
         </div>
       </div>
-    </div>
+    </main>
   );
 };
 

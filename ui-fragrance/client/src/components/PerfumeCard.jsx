@@ -5,55 +5,116 @@ import { useCart } from '../context/CartContext.jsx';
 import { resolveAssetUrl } from '../utils/api.js';
 import './PerfumeCard.css';
 
+const getPrice = (value) => {
+  if (value === null || value === undefined || value === '') return null;
+
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? number : null;
+};
+
 const PerfumeCard = ({ perfume, className = '' }) => {
   const { addToCart } = useCart();
 
   const mainPhoto = perfume.photos?.[0] || perfume.image || '';
+  const actualPrice = getPrice(perfume.actualPrice);
+  const discountPrice = getPrice(perfume.discountPrice);
 
-  const handleQuickAdd = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const onSale =
+    actualPrice !== null &&
+    discountPrice !== null &&
+    discountPrice < actualPrice;
+
+  const displayPrice = onSale
+    ? discountPrice
+    : actualPrice ?? discountPrice;
+
+  const handleQuickAdd = () => {
     addToCart(perfume, 1);
     toast.success(`${perfume.name} added to cart!`);
   };
 
   return (
-    <Link to={`/perfume/${perfume._id}`} className={`perfume-card reveal ${className}`}>
-      <div className="perfume-card-image-wrap">
-        <img src={resolveAssetUrl(mainPhoto)} alt={perfume.name} loading="lazy" />
-        {/* NEW: SALE badge — shown whenever discountPrice is below actualPrice */}
-        {perfume.discountPrice < perfume.actualPrice && (
-          <span className="perfume-card-sale-badge">SALE</span>
-        )}
-      </div>
-      <div className="perfume-card-body">
-        <p className="perfume-card-brand">{perfume.brand}</p>
-        <h3 className="perfume-card-name">{perfume.name}</h3>
-        <p className="perfume-card-desc">
-          {perfume.description?.slice(0, 80)}
-          {perfume.description?.length > 80 ? '...' : ''}
-        </p>
-        <div className="perfume-card-footer">
-          {/* FIXED: shows both actualPrice (strikethrough) and
-              discountPrice (bold gold) instead of the old single `price` string */}
-          <span className="perfume-card-price-group">
-            <span className="perfume-card-actual-price">
-              Rs. {Number(perfume.actualPrice).toLocaleString('en-PK')}
-            </span>
-            <span className="perfume-card-discount-price">
-              Rs. {Number(perfume.discountPrice).toLocaleString('en-PK')}
-            </span>
-          </span>
-          <span className="perfume-card-size">{perfume.size}</span>
+    <article className={`perfume-card reveal ${className}`}>
+      <Link
+        to={`/perfume/${perfume._id}`}
+        className="perfume-card__link"
+      >
+        <div className="perfume-card__image">
+          <img
+            src={resolveAssetUrl(mainPhoto)}
+            alt={perfume.name}
+            loading="lazy"
+          />
+
+          {onSale && (
+            <span className="perfume-card__badge">Sale</span>
+          )}
         </div>
-        <button type="button" className="perfume-card-add-btn" onClick={handleQuickAdd}>
-          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
-            <path d="M7 4h-2l-1 2H2v2h2l3.6 7.59-1.35 2.44A2 2 0 0 0 8 21h12v-2H8l1.1-2h7.45a2 2 0 0 0 1.8-1.11L21.8 8H6.21l-.94-2H7V4zm-1 15a2 2 0 1 0 2 2 2 2 0 0 0-2-2zm10 0a2 2 0 1 0 2 2 2 2 0 0 0-2-2z" />
+
+        <div className="perfume-card__body">
+          {perfume.brand && (
+            <p className="perfume-card__brand">{perfume.brand}</p>
+          )}
+
+          <h3 className="perfume-card__name">{perfume.name}</h3>
+
+          {perfume.description && (
+            <p className="perfume-card__description">
+              {perfume.description.length > 80
+                ? `${perfume.description.slice(0, 80)}...`
+                : perfume.description}
+            </p>
+          )}
+
+          <div className="perfume-card__details">
+            <div className="perfume-card__prices">
+              {onSale && (
+                <span className="perfume-card__original-price">
+                  <span className="perfume-card__sr-only">
+                    Original price:
+                  </span>{' '}
+                  Rs. {actualPrice.toLocaleString('en-PK')}
+                </span>
+              )}
+
+              <span className="perfume-card__price">
+                {displayPrice !== null
+                  ? `Rs. ${displayPrice.toLocaleString('en-PK')}`
+                  : 'Price unavailable'}
+              </span>
+            </div>
+
+            {perfume.size && (
+              <span className="perfume-card__size">{perfume.size}</span>
+            )}
+          </div>
+        </div>
+      </Link>
+
+      <div className="perfume-card__action">
+        <button
+          type="button"
+          className="perfume-card__button"
+          onClick={handleQuickAdd}
+          aria-label={`Add ${perfume.name} to cart`}
+        >
+          Add to cart
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M4 12h16M14 6l6 6-6 6" />
           </svg>
-          Add to Cart
         </button>
       </div>
-    </Link>
+    </article>
   );
 };
 

@@ -1,125 +1,213 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+
 .payment-confirmation-page {
+  --payment-green: #174b35;
+  --payment-green-dark: #123b2a;
+  --payment-text: #1b3024;
+  --payment-muted: #6d7f72;
+  --payment-border: #dce9df;
+  --payment-soft: #f3f8f4;
+
   min-height: 80vh;
   padding: 40px 24px 100px;
-  background: #0a0a0a;
-  color: #fff;
+  background: #fff;
+  color: var(--payment-text);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.payment-confirmation-page *,
+.payment-confirmation-page *::before,
+.payment-confirmation-page *::after {
+  box-sizing: border-box;
 }
 
 .payment-confirmation-container {
+  width: 100%;
   max-width: 760px;
+  margin: 0 auto;
 }
+
+.payment-confirmation-page a:focus-visible,
+.payment-confirmation-page button:focus-visible,
+.payment-confirmation-page input:focus-visible {
+  outline: 3px solid #83b99a;
+  outline-offset: 3px;
+}
+
+/* Breadcrumb */
 
 .payment-breadcrumb {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 9px;
-  margin-bottom: 28px;
-  color: #888;
-  font-size: 0.82rem;
+  gap: 10px;
+  margin-bottom: 30px;
+  color: #a9bbae;
+  font-size: 0.8rem;
 }
 
 .payment-breadcrumb a {
-  color: #aaa;
+  color: var(--payment-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
 }
 
 .payment-breadcrumb a:hover,
 .payment-breadcrumb [aria-current='page'] {
-  color: #d4af37;
+  color: var(--payment-green);
 }
 
+.payment-breadcrumb [aria-current='page'] {
+  font-weight: 600;
+}
+
+/* Main card */
+
 .payment-confirmation-card {
-  padding: 36px;
-  border: 1px solid rgba(212, 175, 55, 0.25);
+  padding: 40px;
+  background: #fff;
+  border: 1px solid var(--payment-border);
   border-radius: 14px;
-  background: #14141f;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 12px 36px rgba(23, 75, 53, 0.06);
+}
+
+.payment-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.payment-eyebrow {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--payment-green);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .payment-confirmation-card h1 {
   margin: 0 0 12px;
-  color: #d4af37;
+  color: var(--payment-green-dark);
   font-family: 'Playfair Display', Georgia, serif;
-  font-size: clamp(1.8rem, 4vw, 2.5rem);
-  text-align: center;
+  font-size: clamp(2rem, 4vw, 2.7rem);
+  font-weight: 500;
+  line-height: 1.2;
 }
 
 .payment-instruction {
-  margin: 0 0 28px;
-  color: #fff;
-  font-size: 1.05rem;
-  text-align: center;
+  max-width: 480px;
+  margin: 0 auto;
+  color: var(--payment-muted);
+  font-size: 0.92rem;
+  line-height: 1.7;
 }
 
+/* Bank details */
+
 .payment-bank-details {
-  padding: 22px;
-  border: 1px solid rgba(212, 175, 55, 0.2);
+  padding: 24px;
+  background: var(--payment-soft);
+  border: 1px solid var(--payment-border);
   border-radius: 10px;
-  background: #0d0d1a;
 }
 
 .payment-bank-details h2 {
-  margin: 0 0 15px;
-  color: #d4af37;
-  font-size: 1.1rem;
+  margin: 0 0 20px;
+  color: var(--payment-green-dark);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 500;
 }
 
 .payment-bank-details dl {
   display: grid;
-  gap: 13px;
+  gap: 15px;
   margin: 0;
 }
 
 .payment-bank-details dl > div {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
   gap: 20px;
 }
 
 .payment-bank-details dt {
-  color: #aaa;
+  color: var(--payment-muted);
+  font-size: 0.88rem;
 }
 
 .payment-bank-details dd {
   margin: 0;
-  color: #fff;
-  font-weight: 600;
+  color: var(--payment-text);
+  font-size: 0.88rem;
+  font-weight: 700;
   text-align: right;
+  overflow-wrap: anywhere;
 }
 
 .payment-bank-details .payment-total-row {
-  padding-top: 13px;
-  border-top: 1px solid rgba(212, 175, 55, 0.2);
+  margin-top: 3px;
+  padding-top: 16px;
+  border-top: 1px solid var(--payment-border);
+}
+
+.payment-bank-details .payment-total-row dt {
+  color: var(--payment-green-dark);
+  font-weight: 700;
 }
 
 .payment-bank-details .payment-total-row dd {
-  color: #d4af37;
+  color: var(--payment-green);
+  font-size: 1.1rem;
 }
 
+/* Screenshot upload */
+
 .payment-upload-field {
-  margin-top: 26px;
+  margin-top: 28px;
 }
 
 .payment-upload-field label {
   display: block;
   margin-bottom: 9px;
-  color: #d4af37;
-  font-weight: 600;
+  color: var(--payment-text);
+  font-size: 0.88rem;
+  font-weight: 700;
 }
 
 .payment-upload-field input {
+  display: block;
   width: 100%;
-  padding: 13px;
-  border: 1px dashed rgba(212, 175, 55, 0.5);
+  padding: 12px;
+  color: var(--payment-muted);
+  background: #fff;
+  border: 1px dashed #a9cbb2;
   border-radius: 8px;
-  background: #0d0d1a;
-  color: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.payment-upload-field input::file-selector-button {
+  margin-right: 12px;
+  padding: 9px 14px;
+  color: var(--payment-green);
+  background: var(--payment-soft);
+  border: 1px solid var(--payment-border);
+  border-radius: 6px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .payment-upload-field small {
   display: block;
   margin-top: 8px;
-  color: #999;
+  color: var(--payment-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
 }
 
 .payment-screenshot-preview {
@@ -127,54 +215,123 @@
   align-items: center;
   gap: 12px;
   margin-top: 16px;
-  color: #ccc;
+  color: var(--payment-muted);
   font-size: 0.85rem;
   overflow-wrap: anywhere;
 }
 
 .payment-screenshot-preview img {
+  flex: 0 0 auto;
   width: 76px;
   height: 76px;
-  flex: 0 0 auto;
-  border: 1px solid rgba(212, 175, 55, 0.4);
-  border-radius: 6px;
   object-fit: cover;
+  border: 1px solid var(--payment-border);
+  border-radius: 7px;
 }
 
+/* Order action */
+
 .payment-order-total {
-  margin: 22px 0 14px;
-  color: #bbb;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin: 26px 0 18px;
+  padding-top: 20px;
+  color: var(--payment-muted);
+  border-top: 1px solid var(--payment-border);
+  font-size: 0.9rem;
+}
+
+.payment-order-total strong {
+  color: var(--payment-green);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.35rem;
 }
 
 .payment-place-order-btn {
   width: 100%;
   padding: 16px;
+  color: #fff;
+  background: var(--payment-green);
   border: 0;
   border-radius: 8px;
-  background: linear-gradient(135deg, #d4af37, #f4d03f);
-  color: #0a0a0a;
-  font-size: 0.95rem;
+  font: inherit;
+  font-size: 0.92rem;
   font-weight: 700;
-  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .payment-place-order-btn:hover:not(:disabled) {
-  box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
-  transform: translateY(-1px);
+  background: var(--payment-green-dark);
+  transform: translateY(-2px);
 }
 
 .payment-place-order-btn:disabled {
-  cursor: not-allowed;
   opacity: 0.6;
+  cursor: not-allowed;
 }
+
+.payment-review-note {
+  margin: 14px 0 0;
+  color: var(--payment-muted);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.payment-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 26px;
+  color: var(--payment-green);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.payment-back-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Responsive */
 
 @media (max-width: 600px) {
   .payment-confirmation-page {
-    padding: 28px 16px 70px;
+    padding: 28px 18px 70px;
   }
 
   .payment-confirmation-card {
-    padding: 24px 18px;
+    padding: 26px 20px;
+  }
+
+  .payment-bank-details {
+    padding: 20px;
+  }
+
+  .payment-bank-details dl > div {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .payment-bank-details dl > div {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .payment-bank-details dd {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .payment-confirmation-page *,
+  .payment-confirmation-page *::before,
+  .payment-confirmation-page *::after {
+    transition: none !important;
   }
 }

@@ -1,40 +1,62 @@
 import React from 'react';
 import './OrderStepper.css';
 
-const STEPS = [
-  'Pending',
-  'Processing',
-  'Shipped',
-  'Delivered',
-];
+const STEPS = ['Pending', 'Processing', 'Shipped', 'Delivered'];
 
 const OrderStepper = ({ currentStatus }) => {
   if (currentStatus === 'Cancelled') {
-    return <div className="order-stepper">Order Cancelled</div>;
+    return (
+      <div className="order-stepper__message order-stepper__message--cancelled">
+        <span aria-hidden="true">×</span>
+        Order cancelled
+      </div>
+    );
   }
 
   const currentIndex = STEPS.indexOf(currentStatus);
 
+  if (currentIndex === -1) {
+    return (
+      <div className="order-stepper__message">
+        Order status unavailable
+      </div>
+    );
+  }
+
   return (
-    <div className="order-stepper">
+    <ol
+      className="order-stepper"
+      aria-label="Order progress"
+    >
       {STEPS.map((step, index) => {
         const isCompleted = index < currentIndex;
         const isActive = index === currentIndex;
 
         return (
-          <div
+          <li
             key={step}
-            className={`stepper-item ${isCompleted ? 'completed' : ''} ${isActive ? 'active' : ''}`}
+            className={`order-stepper__item ${
+              isCompleted ? 'order-stepper__item--completed' : ''
+            } ${isActive ? 'order-stepper__item--active' : ''}`}
+            aria-current={isActive ? 'step' : undefined}
           >
-            <div className="stepper-icon">
+            <span className="order-stepper__icon" aria-hidden="true">
               {isCompleted ? '✓' : index + 1}
-            </div>
-            <p className="stepper-label">{step}</p>
-            {index !== STEPS.length - 1 && <div className="stepper-line" />}
-          </div>
+            </span>
+
+            <span className="order-stepper__label">{step}</span>
+
+            <span className="order-stepper__state">
+              {isCompleted ? 'Completed' : isActive ? 'Current' : 'Upcoming'}
+            </span>
+
+            {index < STEPS.length - 1 && (
+              <span className="order-stepper__line" aria-hidden="true" />
+            )}
+          </li>
         );
       })}
-    </div>
+    </ol>
   );
 };
 

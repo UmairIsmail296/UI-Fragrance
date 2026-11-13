@@ -1,545 +1,629 @@
-/* ================================================================== */
-/*  LUXURY HERO V5 — UI Perfumes · Gold Cinematic                     */
-/* ================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600&family=Outfit:wght@200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
 
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
-:root {
-  --gold: #c9a24d;
-  --gold-light: #e8d5a0;
-  --gold-dark: #9a7a34;
-  --bg: #0a0a0c;
-  --white: #f2efe8;
-  --muted: rgba(242,239,232,0.42);
+.scent-hero,
+.scent-hero *,
+.scent-hero *::before,
+.scent-hero *::after {
+  box-sizing: border-box;
 }
 
-/* ════════════════════════════════════════════════════════════════════ */
-/*  BASE                                                               */
-/* ════════════════════════════════════════════════════════════════════ */
-.lx {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  min-height: 100svh;
-  overflow: hidden;
-  background: var(--bg);
+.scent-hero {
+  --forest: #103b2b;
+  --deep: #09291e;
+  --green: #24714e;
+  --mint: #d9ede1;
+  --pale: #f3f8f4;
+  --white: #fff;
+  --muted: #70847a;
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'DM Sans', sans-serif;
+
+  color: var(--deep);
+  background: var(--white);
+  font-family: var(--sans);
+
+  /* Adjust to match the height of your fixed navbar. */
+  padding-top: 84px;
 }
 
-/* ─── VIDEO BG ─── */
-.lx-video-wrap {
-  position: absolute; inset: 0; z-index: 0;
-}
-.lx-video {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%; object-fit: cover;
-  opacity: 0.28;
-  filter: saturate(0.3) brightness(0.7);
-}
-.lx-video-tint {
-  position: absolute; inset: 0;
-  background:
-    radial-gradient(ellipse 60% 55% at 30% 50%, rgba(10,10,12,0.9), transparent 80%),
-    linear-gradient(to right, rgba(10,10,12,0.96) 0%, rgba(10,10,12,0.5) 55%, rgba(10,10,12,0.3) 100%),
-    linear-gradient(to top, var(--bg) 0%, transparent 30%),
-    linear-gradient(to bottom, rgba(10,10,12,0.7) 0%, transparent 18%);
+.scent-hero h1,
+.scent-hero h2,
+.scent-hero p {
+  margin: 0;
 }
 
-/* ─── CSS GOLD PARTICLES ─── */
-.lx-particles {
-  position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden;
-}
-.lx-p {
-  position: absolute;
-  left: var(--px); top: var(--py);
-  width: var(--s); height: var(--s);
-  border-radius: 50%;
-  background: var(--gold);
-  opacity: 0;
-  animation: pFloat var(--d) var(--del) ease-in-out infinite;
-}
-@keyframes pFloat {
-  0%   { opacity: 0; transform: translateY(0) scale(1); }
-  15%  { opacity: 0.7; }
-  50%  { opacity: 0.4; transform: translateY(-80px) translateX(20px) scale(1.3); }
-  85%  { opacity: 0.6; }
-  100% { opacity: 0; transform: translateY(-160px) translateX(-10px) scale(0.5); }
+.scent-hero a {
+  color: inherit;
 }
 
-/* ════════════════════════════════════════════════════════════════════ */
-/*  CENTER LAYOUT                                                      */
-/* ════════════════════════════════════════════════════════════════════ */
-.lx-center {
-  position: relative; z-index: 10;
-  width: 100%; max-width: 1400px;
-  margin: 0 auto;
-  min-height: 100vh; min-height: 100svh;
+.scent-hero__layout {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  align-items: center;
-  gap: 60px;
-  padding: 60px clamp(28px,5vw,80px) 160px;
+  grid-template-columns: 1fr 1fr;
+  min-height: 680px;
 }
 
-/* ════════════════════════════════════════════════════════════════════ */
-/*  TEXT COLUMN                                                        */
-/* ════════════════════════════════════════════════════════════════════ */
-.lx-txt { display: flex; flex-direction: column; }
+/* LEFT: EDITORIAL PANEL */
 
-/* Stagger animation classes */
-.lx .is-entering .lx-txt .anim-1 { animation: fadeUp 0.7s 0.10s cubic-bezier(.22,1,.36,1) both; }
-.lx .is-entering .lx-txt .anim-2 { /* letters handle own anim */ }
-.lx .is-entering .lx-txt .anim-3 { animation: fadeUp 0.7s 0.50s cubic-bezier(.22,1,.36,1) both; }
-.lx .is-entering .lx-txt .anim-4 { animation: fadeUp 0.7s 0.60s cubic-bezier(.22,1,.36,1) both; }
-.lx .is-entering .lx-txt .anim-5 { animation: fadeUp 0.7s 0.68s cubic-bezier(.22,1,.36,1) both; }
-.lx .is-entering .lx-txt .anim-6 { animation: fadeUp 0.7s 0.76s cubic-bezier(.22,1,.36,1) both; }
-
-.is-leaving .lx-txt .anim-1,
-.is-leaving .lx-txt .anim-3,
-.is-leaving .lx-txt .anim-4,
-.is-leaving .lx-txt .anim-5,
-.is-leaving .lx-txt .anim-6 { animation: fadeOut 0.5s ease both; }
-
-/* Label */
-.lx-label {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.62rem; font-weight: 500;
-  letter-spacing: 6px;
-  color: var(--gold);
-  margin-bottom: 28px;
-  display: flex; align-items: center; gap: 14px;
-}
-.lx-label::before {
-  content: ''; width: 36px; height: 1px;
-  background: linear-gradient(to right, var(--gold), transparent);
-}
-
-/* Name — character stagger */
-.lx-name {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(3.5rem, 8vw, 7.5rem);
-  font-weight: 600;
-  line-height: 0.95;
+.scent-hero__story {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 40px clamp(32px, 6vw, 100px) 32px;
+  background: var(--forest);
   color: var(--white);
-  margin-bottom: 14px;
-  perspective: 900px;
-}
-.lx-ch {
-  display: inline-block;
-  will-change: transform, opacity;
-}
-.is-entering .lx-name .lx-ch {
-  opacity: 0;
-  animation: chReveal 0.65s cubic-bezier(.22,1,.36,1) both;
-  animation-delay: calc(0.18s + var(--i) * 0.04s);
-}
-.is-leaving .lx-name .lx-ch {
-  animation: chHide 0.4s ease both;
-  animation-delay: calc(var(--i) * 0.02s);
 }
 
-@keyframes chReveal {
-  from { opacity: 0; transform: translateY(110%) rotateX(-90deg); filter: blur(6px); }
-  to   { opacity: 1; transform: none; filter: blur(0); }
-}
-@keyframes chHide {
-  to { opacity: 0; transform: translateY(-50%) scale(0.9); filter: blur(3px); }
-}
-
-/* Subtitle */
-.lx-sub {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic;
-  font-size: clamp(1rem, 2.2vw, 1.4rem);
-  color: var(--gold);
-  letter-spacing: 2px;
-  margin-bottom: 24px;
-}
-
-/* Gold divider */
-.lx-divider {
-  margin-bottom: 24px;
-}
-.lx-divider span {
-  display: block;
-  width: 60px; height: 1px;
-  background: linear-gradient(to right, var(--gold), transparent);
+.scent-hero__story::before {
+  position: absolute;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 15% 85%,
+      rgba(91, 158, 113, 0.2),
+      transparent 38%
+    ),
+    linear-gradient(
+      135deg,
+      transparent 60%,
+      rgba(0, 0, 0, 0.12)
+    );
 }
 
-/* Description */
-.lx-desc {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.95rem; font-weight: 300;
-  line-height: 1.9; color: var(--muted);
-  max-width: 420px;
-  margin-bottom: 30px;
-}
-
-/* Buttons */
-.lx-btns { display: flex; gap: 16px; flex-wrap: wrap; }
-
-.lx-btn-gold {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 18px 42px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.7rem; font-weight: 700;
-  letter-spacing: 3.5px; text-transform: uppercase;
-  text-decoration: none;
-  color: var(--bg); background: var(--gold);
-  border: none; cursor: pointer;
-  position: relative; overflow: hidden;
-  transition: transform 0.35s, box-shadow 0.35s;
-  box-shadow: 0 6px 32px rgba(201,162,77,0.25);
-}
-.lx-btn-gold::after {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
-  transform: translateX(-130%);
-  transition: transform 0.65s;
-}
-.lx-btn-gold:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 48px rgba(201,162,77,0.4);
-}
-.lx-btn-gold:hover::after { transform: translateX(130%); }
-.lx-btn-ico { transition: transform 0.3s; }
-.lx-btn-gold:hover .lx-btn-ico { transform: translateX(4px); }
-
-.lx-btn-line {
-  display: inline-flex; align-items: center;
-  padding: 18px 36px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.7rem; font-weight: 500;
-  letter-spacing: 3.5px; text-transform: uppercase;
-  text-decoration: none;
-  color: var(--gold);
-  border: 1px solid rgba(201,162,77,0.3);
-  background: transparent;
-  cursor: pointer;
-  transition: all 0.35s;
-}
-.lx-btn-line:hover {
-  border-color: var(--gold);
-  background: rgba(201,162,77,0.08);
-  transform: translateY(-3px);
-}
-
-/* ════════════════════════════════════════════════════════════════════ */
-/*  PRODUCT CARD                                                       */
-/* ════════════════════════════════════════════════════════════════════ */
-.lx-showcase {
-  display: flex; justify-content: center; align-items: center;
-  perspective: 1000px;
-}
-
-.lx-card {
+.scent-hero__eyebrow,
+.scent-hero__copy,
+.scent-hero__story-footer {
   position: relative;
-  width: clamp(260px, 26vw, 380px);
-  aspect-ratio: 3/4;
-  border-radius: 22px;
-  overflow: visible;
-  transform-style: preserve-3d;
+  z-index: 1;
 }
 
-.is-entering .anim-card {
-  animation: cardIn 1.1s 0.15s cubic-bezier(.22,1,.36,1) both, cardBreath 8s 1.3s ease-in-out infinite;
-}
-.is-leaving .anim-card {
-  animation: cardOut 0.55s ease both;
-}
-
-@keyframes cardIn {
-  from { opacity: 0; transform: perspective(1000px) translateZ(-120px) rotateY(-20deg) translateY(50px); filter: blur(12px) brightness(0.5); }
-  to   { opacity: 1; transform: perspective(1000px) translateZ(0) rotateY(0) translateY(0); filter: blur(0) brightness(1); }
-}
-@keyframes cardOut {
-  to { opacity: 0; transform: perspective(1000px) translateZ(-60px) rotateY(12deg) translateY(-30px); filter: blur(6px) brightness(0.6); }
-}
-@keyframes cardBreath {
-  0%, 100% { transform: translateY(0) rotateY(-1deg) rotateX(0.5deg); }
-  50%      { transform: translateY(-14px) rotateY(1.5deg) rotateX(-1deg); }
+.scent-hero__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #c7dfce;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
 }
 
-/* Glow */
-.lx-card-glow {
-  position: absolute; inset: -40px; z-index: 0;
+.scent-hero__dot {
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: radial-gradient(ellipse at 50% 45%, rgba(201,162,77,0.15), transparent 65%);
-  animation: glowPulse 5s ease-in-out infinite alternate;
-}
-@keyframes glowPulse {
-  from { opacity: 0.5; transform: scale(0.9); }
-  to   { opacity: 1; transform: scale(1.1); }
+  background: #a8dfb5;
+  box-shadow: 0 0 0 5px rgba(168, 223, 181, 0.12);
 }
 
-/* Card inner (image) */
-.lx-card-inner {
-  position: relative; z-index: 2;
-  width: 100%; height: 100%;
-  border-radius: 22px;
-  overflow: hidden;
-}
-.lx-card-inner img {
-  width: 100%; height: 100%; object-fit: cover;
-  transition: transform 1.2s cubic-bezier(.22,1,.36,1);
-}
-.lx-card:hover .lx-card-inner img {
-  transform: scale(1.08);
+.scent-hero__copy {
+  padding: 70px 0;
 }
 
-/* Shimmer / shine overlay */
-.lx-card-shine {
-  position: absolute; inset: 0; z-index: 4;
-  border-radius: 22px; pointer-events: none;
-  background: linear-gradient(
-    115deg,
-    transparent 30%,
-    rgba(232,213,160,0.06) 42%,
-    rgba(232,213,160,0.15) 50%,
-    rgba(232,213,160,0.06) 58%,
-    transparent 70%
-  );
-  background-size: 250% 100%;
-  animation: shine 4.5s ease-in-out infinite;
-}
-@keyframes shine {
-  0%, 100% { background-position: 250% 0; }
-  50%      { background-position: -80% 0; }
+.scent-hero__edition {
+  margin-bottom: 24px !important;
+  color: #acd0b7;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
-/* Card label */
-.lx-card-info {
-  position: absolute; bottom: 0; left: 0; right: 0; z-index: 5;
-  padding: 30px 24px 24px;
-  background: linear-gradient(to top, rgba(10,10,12,0.97) 25%, transparent);
-  display: flex; flex-direction: column; gap: 2px;
-}
-.lx-card-info small {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.52rem; font-weight: 500;
-  letter-spacing: 6px; text-transform: uppercase;
-  color: var(--gold);
-}
-.lx-card-info strong {
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.4rem; font-weight: 600;
-  color: var(--white); letter-spacing: 1px;
+.scent-hero__edition span {
+  padding: 0 8px;
+  opacity: 0.5;
 }
 
-/* Gold border line */
-.lx-card-border {
-  position: absolute; inset: 0; z-index: 6;
-  border-radius: 22px; pointer-events: none;
-  border: 1px solid rgba(201,162,77,0.2);
-  box-shadow:
-    inset 0 1px 0 rgba(232,213,160,0.08),
-    0 40px 80px rgba(0,0,0,0.5),
-    0 0 80px rgba(201,162,77,0.08);
+.scent-hero h1 {
+  font-family: var(--serif);
+  font-size: clamp(4rem, 6.8vw, 7.5rem);
+  font-weight: 400;
+  line-height: 1.02;
+  letter-spacing: -0.055em;
 }
 
-/* ════════════════════════════════════════════════════════════════════ */
-/*  BOTTOM CONTROLS                                                    */
-/* ════════════════════════════════════════════════════════════════════ */
-.lx-bottom {
-  position: absolute; bottom: 0; left: 0; right: 0; z-index: 30;
-  padding: 0 clamp(28px,5vw,80px) 32px;
-  display: flex; align-items: flex-end; justify-content: space-between;
+.scent-hero h1 em {
+  color: #bde3c6;
+  font-weight: 400;
 }
 
-/* Pills */
-.lx-pills { display: flex; gap: 6px; }
-
-.lx-pill {
-  position: relative;
-  padding: 12px 24px;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 6px;
-  cursor: pointer;
-  overflow: hidden;
-  transition: border-color 0.3s, background 0.3s;
-}
-.lx-pill:hover { border-color: rgba(201,162,77,0.3); }
-.lx-pill.active {
-  border-color: rgba(201,162,77,0.5);
-  background: rgba(201,162,77,0.06);
+.scent-hero__intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  max-width: 390px;
+  margin-top: 35px;
 }
 
-.lx-pill-label {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.62rem; font-weight: 500;
-  letter-spacing: 3px; text-transform: uppercase;
+.scent-hero__intro-line {
+  flex: 0 0 34px;
+  height: 1px;
+  margin-top: 12px;
+  background: #a8d1b1;
+}
+
+.scent-hero__intro p {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.scent-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 26px;
+  margin-top: 38px;
+}
+
+.scent-hero__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+  padding: 7px 7px 7px 22px;
+  border: 1px solid var(--white);
+  border-radius: 100px;
+  background: var(--white);
+  color: var(--forest) !important;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.25s, transform 0.25s;
+}
+
+.scent-hero__button:hover {
+  transform: translateY(-3px);
+  background: var(--mint);
+}
+
+.scent-hero__button-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--forest);
+  color: var(--white);
+}
+
+.scent-hero__story-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--white) !important;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.scent-hero__story-link svg {
+  width: 16px;
+  transition: transform 0.25s;
+}
+
+.scent-hero__story-link:hover svg {
+  transform: translate(3px, -3px);
+}
+
+.scent-hero__story-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scent-hero__watermark {
+  position: absolute;
+  right: -12px;
+  bottom: 38px;
+  color: rgba(255, 255, 255, 0.035);
+  font-family: var(--serif);
+  font-size: clamp(150px, 23vw, 340px);
+  line-height: 0.8;
+  pointer-events: none;
+}
+
+/* RIGHT: PRODUCT PANEL */
+
+.scent-hero__product {
+  display: flex;
+  flex-direction: column;
+  padding: 40px clamp(32px, 5vw, 80px) 35px;
+  background: #f8fbf8;
+}
+
+.scent-hero__product-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
   color: var(--muted);
-  position: relative; z-index: 2;
-  transition: color 0.3s;
-}
-.lx-pill.active .lx-pill-label { color: var(--gold); }
-
-.lx-pill-progress {
-  position: absolute; bottom: 0; left: 0; height: 2px;
-  background: var(--gold);
-  width: 0;
-  animation: pillFill 7000ms linear forwards;
-}
-@keyframes pillFill { to { width: 100%; } }
-
-/* Controls */
-.lx-controls {
-  display: flex; align-items: center; gap: 14px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
 }
 
-.lx-arrow {
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  border: 1px solid rgba(201,162,77,0.2);
-  background: rgba(10,10,12,0.5);
-  backdrop-filter: blur(8px);
-  color: var(--gold);
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  transition: all 0.35s;
-}
-.lx-arrow:hover {
-  background: var(--gold); color: var(--bg);
-  border-color: var(--gold);
-  box-shadow: 0 0 32px rgba(201,162,77,0.35);
-  transform: scale(1.08);
-}
-
-.lx-count {
-  display: flex; align-items: baseline; gap: 5px;
-  font-family: 'Outfit', sans-serif;
-  min-width: 55px; justify-content: center;
-}
-.lx-count em {
-  font-style: normal;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.8rem; font-weight: 600;
-  color: var(--gold);
-  animation: countIn 0.45s ease both;
-}
-@keyframes countIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to   { opacity: 1; transform: none; }
-}
-.lx-count span {
-  font-size: 0.6rem; letter-spacing: 2px; color: rgba(255,255,255,0.2);
-}
-
-/* Scroll cue */
-.lx-scroll-cue {
-  position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%);
-  z-index: 20;
-  display: flex; flex-direction: column; align-items: center;
-}
-.lx-scroll-track {
-  width: 1px; height: 50px; overflow: hidden;
-  background: rgba(201,162,77,0.15);
-}
-.lx-scroll-track span {
-  display: block; width: 100%; height: 50%;
-  background: var(--gold);
-  animation: scrollPulse 2s ease-in-out infinite;
-}
-@keyframes scrollPulse {
-  0%   { transform: translateY(-100%); }
-  50%  { transform: translateY(100%); }
-  100% { transform: translateY(300%); }
-}
-
-/* ════════════════════════════════════════════════════════════════════ */
-/*  MARQUEE                                                            */
-/* ════════════════════════════════════════════════════════════════════ */
-.lx-marquee {
-  background: var(--bg);
-  border-top: 1px solid rgba(201,162,77,0.25);
-  overflow: hidden;
-  padding: 18px 0;
+.scent-hero__showcase {
   position: relative;
-}
-.lx-marquee::before, .lx-marquee::after {
-  content: ''; position: absolute; top: 0; bottom: 0; width: 100px; z-index: 2; pointer-events: none;
-}
-.lx-marquee::before { left: 0; background: linear-gradient(to right, var(--bg), transparent); }
-.lx-marquee::after  { right: 0; background: linear-gradient(to left, var(--bg), transparent); }
-
-.lx-marquee-rail {
-  display: flex; width: max-content;
-  animation: mq 32s linear infinite;
-}
-.lx-marquee:hover .lx-marquee-rail { animation-play-state: paused; }
-
-.lx-marquee-set {
-  display: flex; align-items: center; flex-shrink: 0;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  min-height: 360px;
+  padding: 35px 30px;
 }
 
-.lx-mw {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.68rem; font-weight: 400;
-  letter-spacing: 4px; text-transform: uppercase;
-  color: rgba(242,239,232,0.3);
-  padding: 0 clamp(12px, 2vw, 28px);
+.scent-hero__showcase::before {
+  position: absolute;
+  width: min(75%, 390px);
+  aspect-ratio: 1;
+  border: 1px solid #d3e5d8;
+  border-radius: 50%;
+  content: '';
+}
+
+.scent-hero__showcase::after {
+  position: absolute;
+  width: min(88%, 460px);
+  aspect-ratio: 1;
+  border: 1px solid #e4eee6;
+  border-radius: 50%;
+  content: '';
+}
+
+.scent-hero__image-frame {
+  position: relative;
+  z-index: 1;
+  width: min(310px, 76%);
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 180px 180px 12px 12px;
+  background: #dcece0;
+  box-shadow: 0 25px 60px rgba(16, 59, 43, 0.14);
+}
+
+.scent-hero__image-frame::after {
+  position: absolute;
+  inset: 45% 0 0;
+  content: '';
+  background: linear-gradient(transparent, rgba(4, 34, 20, 0.65));
+  pointer-events: none;
+}
+
+.scent-hero__image-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s ease;
+}
+
+.scent-hero__image-frame:hover img {
+  transform: scale(1.05);
+}
+
+.scent-hero__image-label {
+  position: absolute;
+  z-index: 1;
+  right: 20px;
+  bottom: 24px;
+  left: 20px;
+  color: var(--white);
+  text-align: center;
+}
+
+.scent-hero__image-label span {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.scent-hero__image-label strong {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.scent-hero__seal {
+  position: absolute;
+  z-index: 2;
+  top: 17%;
+  right: 8%;
+  display: flex;
+  width: 86px;
+  height: 86px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: 1px solid #b8d4bf;
+  border-radius: 50%;
+  background: #f8fbf8;
+  color: var(--green);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.scent-hero__seal-star {
+  font-size: 23px;
+  line-height: 1;
+}
+
+.scent-hero__product-info {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 24px;
+}
+
+.scent-hero__label {
+  margin-bottom: 8px !important;
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.scent-hero__product-info h2 {
+  font-family: var(--serif);
+  font-size: clamp(2rem, 3vw, 3rem);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+}
+
+.scent-hero__tagline {
+  margin-top: 5px !important;
+  color: var(--muted);
+  font-family: var(--serif);
+  font-size: 15px;
+  font-style: italic;
+}
+
+.scent-hero__round-link {
+  display: grid;
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 1px solid #cbded0;
+  border-radius: 50%;
+  text-decoration: none;
+  transition: background 0.25s, color 0.25s;
+}
+
+.scent-hero__round-link:hover {
+  background: var(--forest);
+  color: var(--white);
+}
+
+.scent-hero__notes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding-top: 20px;
+  border-top: 1px solid #dce8de;
+}
+
+.scent-hero__notes span,
+.scent-hero__notes strong {
+  display: block;
+}
+
+.scent-hero__notes span {
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.scent-hero__notes strong {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 400;
+}
+
+/* COLLECTION STRIP */
+
+.scent-hero__collection {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.7fr) 3fr;
+  align-items: center;
+  gap: 32px;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 30px clamp(24px, 5vw, 80px);
+}
+
+.scent-hero__collection-heading span:first-child {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.scent-hero__collection-heading strong {
+  font-family: var(--serif);
+  font-size: 25px;
+  font-weight: 400;
   white-space: nowrap;
 }
-.lx-mw:nth-child(4n+2) {
-  font-family: 'Cormorant Garamond', serif;
-  font-style: italic; font-weight: 600;
-  font-size: 1rem; letter-spacing: 2px;
-  text-transform: none;
-  color: var(--gold);
+
+.scent-hero__collection-heading strong span {
+  color: var(--green);
 }
 
-.lx-mdot {
-  font-size: 0.4rem; color: var(--gold); opacity: 0.4;
+.scent-hero__collection-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
 }
 
-@keyframes mq {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
+.scent-hero__collection-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #e1ebe3;
+  border-radius: 10px;
+  background: var(--white);
+  text-decoration: none;
+  transition: border-color 0.25s, background 0.25s;
 }
 
-/* ════════════════════════════════════════════════════════════════════ */
-/*  SHARED                                                             */
-/* ════════════════════════════════════════════════════════════════════ */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(28px); }
-  to   { opacity: 1; transform: none; }
-}
-@keyframes fadeOut {
-  to { opacity: 0; transform: translateY(-18px); }
+.scent-hero__collection-item:hover,
+.scent-hero__collection-item.is-active {
+  border-color: #b8d7bf;
+  background: var(--pale);
 }
 
-/* ════════════════════════════════════════════════════════════════════ */
-/*  RESPONSIVE                                                         */
-/* ════════════════════════════════════════════════════════════════════ */
-@media (max-width: 1024px) {
-  .lx-center { grid-template-columns: 1fr; gap: 40px; }
-  .lx-showcase { display: none; }
+.scent-hero__collection-number {
+  padding-left: 3px;
+  color: #93aa99;
+  font-size: 10px;
+  font-weight: 700;
 }
 
-@media (max-width: 640px) {
-  .lx-header { padding: 18px 20px; }
-  .lx-topnav { display: none; }
-  .lx-center { padding: 100px 20px 170px; }
-  .lx-name { font-size: clamp(2.8rem, 13vw, 4rem); }
-  .lx-bottom {
-    padding: 0 16px 20px;
-    flex-direction: column; align-items: stretch; gap: 14px;
+.scent-hero__collection-item img {
+  width: 48px;
+  height: 58px;
+  flex-shrink: 0;
+  border-radius: 5px;
+  object-fit: cover;
+}
+
+.scent-hero__collection-text {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.scent-hero__collection-text strong,
+.scent-hero__collection-text small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scent-hero__collection-text strong {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.scent-hero__collection-text small {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.scent-hero__collection-arrow {
+  display: grid;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  background: #e5f1e7;
+  color: var(--forest);
+}
+
+.scent-hero__collection-arrow svg {
+  width: 15px;
+}
+
+.scent-hero a:focus-visible {
+  outline: 3px solid #63b87d;
+  outline-offset: 4px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1100px) {
+  .scent-hero__collection {
+    grid-template-columns: 1fr;
+    gap: 18px;
   }
-  .lx-pills { width: 100%; }
-  .lx-pill { flex: 1; padding: 10px 10px; text-align: center; }
-  .lx-pill-label { font-size: 0.55rem; letter-spacing: 2px; }
-  .lx-controls { justify-content: center; }
-  .lx-scroll-cue { display: none; }
 }
 
-/* ════════════════════════════════════════════════════════════════════ */
-/*  REDUCED MOTION                                                     */
-/* ════════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .scent-hero__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .scent-hero__story {
+    min-height: 570px;
+    padding: 30px 28px;
+  }
+
+  .scent-hero__copy {
+    padding: 70px 0;
+  }
+
+  .scent-hero h1 {
+    font-size: clamp(4rem, 12vw, 6rem);
+  }
+
+  .scent-hero__product {
+    padding: 30px 28px;
+  }
+
+  .scent-hero__showcase {
+    min-height: 390px;
+  }
+
+  .scent-hero__collection-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 400px) {
+  .scent-hero__story-footer {
+    flex-direction: column;
+  }
+
+  .scent-hero__showcase {
+    min-height: 320px;
+    padding: 30px 10px;
+  }
+
+  .scent-hero__seal {
+    right: 0;
+    width: 72px;
+    height: 72px;
+  }
+
+  .scent-hero__notes strong {
+    font-size: 13px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  .scent-hero *,
+  .scent-hero *::before,
+  .scent-hero *::after {
+    transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
   }
 }

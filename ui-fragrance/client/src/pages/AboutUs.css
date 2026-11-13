@@ -1,391 +1,343 @@
-/* ==========================================================================
-   LUXURY ABOUT US PAGE STYLES
-   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;1,400&display=swap');
 
-:root {
-  --color-gold: #d4af37;
-  --color-gold-light: #f5e7a9;
-  --color-gold-glow: rgba(212, 175, 55, 0.18);
-  --color-bg-primary: #0a0a0a;
-  --color-bg-secondary: #121212;
-  --color-bg-card: rgba(22, 22, 22, 0.7);
-  --color-text-main: #f5f5f5;
-  --color-text-muted: #a3a3a3;
-  --color-border: rgba(212, 175, 55, 0.15);
-  --color-border-hover: rgba(212, 175, 55, 0.5);
-  --font-serif: 'Cinzel', 'Playfair Display', Georgia, serif;
+.about-page,
+.about-page *,
+.about-page *::before,
+.about-page *::after {
+  box-sizing: border-box;
 }
 
 .about-page {
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-main);
+  --about-dark: #163c2b;
+  --about-green: #246344;
+  --about-muted: #6d7f72;
+  --about-line: #dce9df;
+  --about-light: #f3f8f4;
+  --about-serif: 'Playfair Display', Georgia, serif;
+
   overflow-x: hidden;
+  background: #fff;
+  color: var(--about-dark);
+  font-family: 'DM Sans', sans-serif;
 }
 
-/* --- Container Utility --- */
-.about-page .container {
-  max-width: 1160px;
+.about-page h1,
+.about-page h2,
+.about-page h3,
+.about-page p,
+.about-page blockquote {
+  margin: 0;
+}
+
+.about-page__container {
+  width: min(100% - 48px, 1200px);
   margin: 0 auto;
-  padding: 0 24px;
 }
 
-/* --- Shared Section Headers --- */
-.section-subtitle {
-  display: inline-block;
-  font-size: 0.8rem;
-  letter-spacing: 4px;
+.about-page__eyebrow {
+  color: var(--about-green);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--color-gold);
-  margin-bottom: 12px;
-  font-weight: 600;
 }
 
-.section-heading {
-  font-size: 2.3rem;
-  font-family: var(--font-serif);
-  font-weight: 500;
-  letter-spacing: 1px;
-  margin-bottom: 16px;
-  color: #ffffff;
+/* Hero */
+
+.about-page__hero {
+  padding: clamp(80px, 10vw, 140px) 0;
+  border-bottom: 1px solid var(--about-line);
+  background: var(--about-light);
+  text-align: center;
 }
 
-.section-heading span {
-  background: linear-gradient(135deg, var(--color-gold-light) 0%, var(--color-gold) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* ==========================================================================
-   1. HERO SECTION
-   ========================================================================== */
-.about-hero {
-  position: relative;
-  padding: 120px 0 80px;
-  background: radial-gradient(ellipse at top, #1c1810 0%, var(--color-bg-primary) 70%);
-  border-bottom: 1px solid var(--color-border);
-  overflow: hidden;
-}
-
-.hero-ambient-glow {
-  position: absolute;
-  top: -100px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 600px;
-  height: 400px;
-  background: radial-gradient(circle, var(--color-gold-glow) 0%, transparent 70%);
-  filter: blur(80px);
-  pointer-events: none;
-}
-
-.hero-badge {
-  display: inline-block;
-  padding: 6px 18px;
-  border-radius: 50px;
-  border: 1px solid var(--color-border);
-  background: rgba(212, 175, 55, 0.05);
-  color: var(--color-gold);
-  font-size: 0.8rem;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-bottom: 24px;
-  backdrop-filter: blur(10px);
-}
-
-.hero-title {
-  font-family: var(--font-serif);
-  font-size: clamp(2.2rem, 5vw, 3.8rem);
-  line-height: 1.2;
+.about-page__hero h1 {
+  margin-top: 22px;
+  font-family: var(--about-serif);
+  font-size: clamp(4rem, 8vw, 7.5rem);
   font-weight: 400;
-  max-width: 900px;
-  margin: 0 auto 20px;
+  line-height: 1;
+  letter-spacing: -0.055em;
 }
 
-.hero-title span {
-  font-style: italic;
-  background: linear-gradient(135deg, #fff 0%, var(--color-gold) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+.about-page__hero h1 em {
+  color: #508a64;
+  font-weight: 400;
 }
 
-.hero-subtitle {
-  color: var(--color-text-muted);
-  font-size: 1.15rem;
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.7;
+.about-page__hero-description {
+  max-width: 480px;
+  margin: 25px auto 0 !important;
+  color: var(--about-muted);
+  font-size: 1rem;
+  line-height: 1.8;
 }
 
-/* ==========================================================================
-   2. STORY & STATS SECTION
-   ========================================================================== */
-.about-story-section {
-  padding: 100px 0;
-  position: relative;
+/* Story */
+
+.about-page__story {
+  padding: clamp(70px, 9vw, 120px) 0;
 }
 
-.story-grid {
+.about-page__story-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 60px;
   align-items: center;
+  gap: clamp(50px, 8vw, 110px);
 }
 
-.story-quote-card {
-  background: linear-gradient(145deg, rgba(28, 28, 28, 0.6) 0%, rgba(15, 15, 15, 0.9) 100%);
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
-  padding: 48px;
+.about-page__quote {
   position: relative;
-  backdrop-filter: blur(12px);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  padding: clamp(35px, 5vw, 60px);
+  background: var(--about-dark);
+  color: #fff;
 }
 
-.quote-mark {
-  font-family: var(--font-serif);
-  font-size: 5rem;
-  color: var(--color-gold);
-  opacity: 0.3;
+.about-page__quote-mark {
+  display: block;
+  height: 70px;
+  color: #a8d5b3;
+  font-family: var(--about-serif);
+  font-size: 6rem;
   line-height: 1;
-  position: absolute;
-  top: 20px;
-  left: 30px;
 }
 
-.quote-text {
-  font-size: 1.25rem;
-  font-family: var(--font-serif);
-  line-height: 1.8;
-  color: #fff;
-  margin-bottom: 24px;
-  position: relative;
-  z-index: 1;
+.about-page__quote blockquote {
+  font-family: var(--about-serif);
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  font-weight: 400;
+  line-height: 1.55;
 }
 
-.quote-signature {
-  font-size: 0.8rem;
-  letter-spacing: 2px;
-  color: var(--color-gold);
-  font-weight: 600;
-  margin-bottom: 36px;
-}
-
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-  border-top: 1px solid var(--color-border);
-  padding-top: 24px;
-}
-
-.stat-item h3 {
-  font-size: 1.8rem;
-  color: var(--color-gold);
-  font-family: var(--font-serif);
-  margin-bottom: 4px;
-}
-
-.stat-item span {
-  font-size: 0.78rem;
-  color: var(--color-text-muted);
+.about-page__quote p {
+  margin-top: 28px;
+  color: #b8d9bf;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
-.story-content p {
-  color: var(--color-text-muted);
-  font-size: 1.05rem;
-  line-height: 1.9;
-  margin-bottom: 20px;
+.about-page__story-copy h2,
+.about-page__section-heading h2,
+.about-page__founders-heading h2 {
+  font-family: var(--about-serif);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
 }
 
-.story-content p strong {
-  color: #ffffff;
+.about-page__story-copy h2 {
+  margin: 16px 0 24px;
 }
 
-/* ==========================================================================
-   3. VALUES / PILLARS SECTION
-   ========================================================================== */
-.about-values-section {
-  padding: 80px 0 100px;
-  background: var(--color-bg-secondary);
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.values-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  margin-top: 50px;
-}
-
-.value-card {
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  padding: 40px 30px;
-  text-align: center;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  backdrop-filter: blur(10px);
-}
-
-.value-card:hover {
-  transform: translateY(-8px);
-  border-color: var(--color-gold);
-  box-shadow: 0 15px 35px var(--color-gold-glow);
-}
-
-.value-icon {
-  font-size: 2rem;
-  color: var(--color-gold);
-  margin-bottom: 20px;
-}
-
-.value-title {
-  font-family: var(--font-serif);
-  font-size: 1.3rem;
-  margin-bottom: 14px;
-  color: #fff;
-}
-
-.value-desc {
+.about-page__story-copy > p:not(.about-page__eyebrow) {
+  margin-top: 16px;
+  color: var(--about-muted);
   font-size: 0.95rem;
-  color: var(--color-text-muted);
+  line-height: 1.85;
+}
+
+.about-page__story-copy strong {
+  color: var(--about-dark);
+}
+
+/* Values */
+
+.about-page__values {
+  padding: clamp(70px, 8vw, 110px) 0;
+  border-top: 1px solid var(--about-line);
+  border-bottom: 1px solid var(--about-line);
+  background: var(--about-light);
+}
+
+.about-page__section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+}
+
+.about-page__section-heading h2 {
+  margin-top: 14px;
+}
+
+.about-page__section-heading h2 span,
+.about-page__founders-heading h2 span {
+  color: #508a64;
+}
+
+.about-page__section-heading > p {
+  max-width: 260px;
+  color: var(--about-muted);
+  font-size: 0.9rem;
   line-height: 1.7;
 }
 
-/* ==========================================================================
-   4. FOUNDERS SECTION (PORTRAIT EDITORIAL LOOK)
-   ========================================================================== */
-.founders-section {
-  padding: 100px 0 120px;
-}
-
-.founders-intro {
-  color: var(--color-text-muted);
-  max-width: 500px;
-  margin: 0 auto;
-  font-size: 1rem;
-}
-
-.founders-grid {
+.about-page__values-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 50px;
-  max-width: 860px;
-  margin: 60px auto 0;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin-top: 50px;
+  border: 1px solid var(--about-line);
+  background: var(--about-line);
 }
 
-.founder-card {
-  background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
+.about-page__value {
+  min-height: 220px;
+  padding: 32px;
+  background: #fff;
+}
+
+.about-page__value-number {
+  color: #7aa889;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.about-page__value h3 {
+  margin-top: 35px;
+  font-family: var(--about-serif);
+  font-size: 1.35rem;
+  font-weight: 400;
+}
+
+.about-page__value p {
+  margin-top: 12px;
+  color: var(--about-muted);
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+/* Founders */
+
+.about-page__founders {
+  padding: clamp(70px, 9vw, 120px) 0;
+}
+
+.about-page__founders-heading {
+  max-width: 560px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.about-page__founders-heading h2 {
+  margin-top: 14px;
+}
+
+.about-page__founders-heading > p:last-child {
+  margin-top: 16px;
+  color: var(--about-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.about-page__founders-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+  max-width: 850px;
+  margin: 50px auto 0;
+}
+
+.about-page__founder {
+  min-width: 0;
+}
+
+.about-page__founder-image {
   overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  transition: all 0.4s ease;
-  position: relative;
+  aspect-ratio: 4 / 4.5;
+  background: #edf3ee;
 }
 
-.founder-card:hover {
-  transform: translateY(-10px);
-  border-color: var(--color-border-hover);
-  box-shadow: 0 25px 50px rgba(212, 175, 55, 0.15);
-}
-
-.founder-image-wrapper {
-  position: relative;
-  width: 100%;
-  height: 380px;
-  overflow: hidden;
-}
-
-.founder-image-wrapper img {
+.about-page__founder-image img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center top;
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.6s ease;
 }
 
-.founder-card:hover .founder-image-wrapper img {
-  transform: scale(1.06);
+.about-page__founder:hover img {
+  transform: scale(1.04);
 }
 
-.founder-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(10,10,10,0.95) 100%);
+.about-page__founder-info {
+  padding: 20px 0 0;
 }
 
-.founder-info {
-  padding: 28px 30px;
-  text-align: center;
-  background: var(--color-bg-card);
-  position: relative;
-  z-index: 2;
-}
-
-.founder-name {
-  font-family: var(--font-serif);
-  font-size: 1.45rem;
-  color: #fff;
-  margin-bottom: 6px;
-  letter-spacing: 0.5px;
-}
-
-.founder-role {
-  color: var(--color-gold);
-  font-size: 0.85rem;
-  letter-spacing: 2px;
+.about-page__founder-role {
+  color: #508a64;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
-  margin-bottom: 12px;
-  font-weight: 500;
 }
 
-.founder-bio {
-  color: var(--color-text-muted);
-  font-size: 0.92rem;
-  line-height: 1.6;
-  margin: 0;
+.about-page__founder-info h3 {
+  margin-top: 8px;
+  font-family: var(--about-serif);
+  font-size: 1.5rem;
+  font-weight: 400;
 }
 
-/* ==========================================================================
-   RESPONSIVE DESIGN (MOBILE & TABLET)
-   ========================================================================== */
-@media (max-width: 900px) {
-  .story-grid {
+.about-page__founder-bio {
+  margin-top: 10px !important;
+  color: var(--about-muted);
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .about-page__story-grid {
     grid-template-columns: 1fr;
-    gap: 40px;
   }
 
-  .values-grid {
+  .about-page__section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .about-page__values-grid {
     grid-template-columns: 1fr;
-    gap: 20px;
+  }
+
+  .about-page__value {
+    min-height: 0;
+  }
+
+  .about-page__value h3 {
+    margin-top: 20px;
   }
 }
 
-@media (max-width: 650px) {
-  .about-hero {
-    padding: 80px 0 50px;
+@media (max-width: 560px) {
+  .about-page__container {
+    width: min(100% - 36px, 1200px);
   }
 
-  .founders-grid {
+  .about-page__hero h1 {
+    font-size: clamp(3.5rem, 15vw, 5rem);
+  }
+
+  .about-page__founders-grid {
     grid-template-columns: 1fr;
     max-width: 400px;
+    gap: 40px;
   }
+}
 
-  .stats-row {
-    grid-template-columns: 1fr;
-    text-align: center;
-    gap: 16px;
-  }
-
-  .founder-image-wrapper {
-    height: 320px;
-  }
-
-  .story-quote-card {
-    padding: 30px 20px;
+@media (prefers-reduced-motion: reduce) {
+  .about-page *,
+  .about-page *::before,
+  .about-page *::after {
+    transition: none !important;
+    animation: none !important;
   }
 }

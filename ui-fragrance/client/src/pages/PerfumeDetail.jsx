@@ -1,45 +1,59 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import api from '../utils/api.js';
-import { resolveAssetUrl } from '../utils/api.js';
+import api, { resolveAssetUrl } from '../utils/api.js';
 import { uploadToCloudinary } from '../utils/cloudinary.js';
 import { useCart } from '../context/CartContext.jsx';
 import './PerfumeDetail.css';
 
 const MAX_REVIEW_PHOTOS = 3;
 
-const renderStars = (rating) => {
-  const stars = Array.from({ length: 5 }, (_, index) => index + 1);
-  return stars.map((star) => (
-    <span key={star} className={star <= Number(rating) ? 'lux-star-filled' : 'lux-star-empty'}>★</span>
+const renderStars = (rating) =>
+  [1, 2, 3, 4, 5].map((star) => (
+    <span
+      key={star}
+      aria-hidden="true"
+      className={
+        star <= Number(rating) ? 'lux-star-filled' : 'lux-star-empty'
+      }
+    >
+      ★
+    </span>
   ));
-};
 
 const PerfumeDetail = () => {
   const { id } = useParams();
+  const { addToCart } = useCart();
+
   const [perfume, setPerfume] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [reviewsLoading, setReviewsLoading] = useState(true);
+  const [reviewsError, setReviewsError] = useState(false);
   const [error, setError] = useState('');
   const [activeMediaIndex, setActiveMediaIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [justAdded, setJustAdded] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [reviewForm, setReviewForm] = useState({ name: '', rating: 5, comment: '', photos: [] });
+  const [reviewForm, setReviewForm] = useState({
+    name: '',
+    rating: 5,
+    comment: '',
+    photos: [],
+  });
   const [reviewSubmitting, setReviewSubmitting] = useState(false);
   const [reviewUploading, setReviewUploading] = useState(false);
   const [hoverRating, setHoverRating] = useState(0);
-  const { addToCart } = useCart();
 
   const fetchReviews = async () => {
     try {
       setReviewsLoading(true);
+      setReviewsError(false);
       const { data } = await api.get(`/reviews/perfume/${id}`);
       setReviews(Array.isArray(data) ? data : []);
     } catch (err) {
       setReviews([]);
+      setReviewsError(true);
     } finally {
       setReviewsLoading(false);
     }
@@ -49,6 +63,7 @@ const PerfumeDetail = () => {
     const fetchPerfume = async () => {
       setLoading(true);
       setError('');
+
       try {
         const { data } = await api.get(`/perfumes/${id}`);
         setPerfume(data);
@@ -61,68 +76,48 @@ const PerfumeDetail = () => {
         setLoading(false);
       }
     };
+
     fetchPerfume();
     fetchReviews();
     window.scrollTo(0, 0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
-  const photos = perfume?.photos?.length ? perfume.photos : perfume?.image ? [perfume.image] : [];
+  const photos = perfume?.photos?.length
+    ? perfume.photos
+    : perfume?.image
+      ? [perfume.image]
+      : [];
+
   const videos = perfume?.videos || [];
 
   const media = [
     ...photos.map((src) => ({ type: 'photo', src })),
     ...videos.map((src) => ({ type: 'video', src })),
   ];
+
   const activeMedia = media[activeMediaIndex] || media[0];
 
-  const goToPrevMedia = () => {
-    setActiveMediaIndex((prev) => (prev === 0 ? media.length - 1 : prev - 1));
-  };
-
-  const goToNextMedia = () => {
-    setActiveMediaIndex((prev) => (prev === media.length - 1 ? 0 : prev + 1));
-  };
-
-  const decrementQuantity = () => setQuantity((q) => Math.max(1, q - 1));
-  const incrementQuantity = () => setQuantity((q) => Math.min(10, q + 1));
-
   const averageRating = useMemo(() => {
-    if (!reviews.length) return 0;
-    const total = reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0);
+    if (!reviews.length) return null;
+
+    const total = reviews.reduce(
+      (sum, review) => sum + Number(review.rating || 0),
+      0
+    );
+
     return total / reviews.length;
   }, [reviews]);
 
-  if (loading) {
-    return (
-      <div className="detail-loading-wrapper">
-        <div className="detail-gold-spinner"></div>
-        <p>Revealing Olfactory Masterpiece...</p>
-      </div>
-    );
-  }
-
-  if (error || !perfume) {
-    return (
-      <div className="container text-center detail-error-container">
-        <p className="detail-error-message">{error}</p>
-        <Link to="/shop" className="btn-back-to-vault">Return To Vault</Link>
-      </div>
-    );
-  }
-
   const handleAddToCart = () => {
     addToCart(perfume, quantity);
-    toast.success(`${perfume.name} added to your selection!`);
+    toast.success(`${perfume.name} added to your cart!`);
     setJustAdded(true);
   };
 
   const handleReviewChange = (event) => {
     const { name, value } = event.target;
     setReviewForm((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleRatingSelect = (rate) => {
-    setReviewForm((prev) => ({ ...prev, rating: rate }));
   };
 
   const handleReviewPhotoUpload = async (event) => {
@@ -132,6 +127,7 @@ const PerfumeDetail = () => {
     if (!selectedFiles.length) return;
 
     const remainingSlots = MAX_REVIEW_PHOTOS - reviewForm.photos.length;
+
     if (remainingSlots <= 0) {
       toast.error('Maximum 3 photos allowed.');
       return;
@@ -149,8 +145,8 @@ const PerfumeDetail = () => {
         ...prev,
         photos: [...prev.photos, ...uploadedUrls.filter(Boolean)],
       }));
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Photo upload failed.');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Photo upload failed.');
     } finally {
       setReviewUploading(false);
     }
@@ -178,6 +174,7 @@ const PerfumeDetail = () => {
 
     try {
       setReviewSubmitting(true);
+
       await api.post('/reviews', {
         name: reviewForm.name.trim(),
         perfumeId: id,
@@ -188,45 +185,65 @@ const PerfumeDetail = () => {
 
       setReviewForm({ name: '', rating: 5, comment: '', photos: [] });
       setShowReviewForm(false);
-      toast.success('Thank you! Your impression has been published.');
+      toast.success('Thank you! Your review has been published.');
       await fetchReviews();
-    } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to publish review.');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to publish review.');
     } finally {
       setReviewSubmitting(false);
     }
   };
 
+  if (loading) {
+    return (
+      <main className="lux-detail-page">
+        <div className="detail-loading-wrapper" role="status">
+          <div className="detail-gold-spinner" aria-hidden="true" />
+          <p>Loading fragrance...</p>
+        </div>
+      </main>
+    );
+  }
+
+  if (error || !perfume) {
+    return (
+      <main className="lux-detail-page">
+        <div className="container detail-error-container">
+          <p className="detail-error-message">
+            {error || 'Perfume details not found.'}
+          </p>
+          <Link to="/shop" className="btn-back-to-vault">
+            Return to shop
+          </Link>
+        </div>
+      </main>
+    );
+  }
+
   const isOnSale = perfume.discountPrice < perfume.actualPrice;
 
   return (
-    <div className="lux-detail-page">
-      <div className="detail-ambient-glow"></div>
-      
+    <main className="lux-detail-page">
       <div className="container">
-        {/* Breadcrumbs */}
         <div className="detail-nav-header">
           <Link to="/shop" className="detail-back-arrow-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
-            <span>Back to Collection</span>
+            <span aria-hidden="true">←</span> Back to collection
           </Link>
         </div>
 
-        {/* Core Product Layout */}
         <div className="detail-grid">
-          
-          {/* LEFT: Premium Editorial Media Gallery */}
           <div className="detail-gallery-col">
             <div className="detail-media-canvas">
               {media.length > 1 && (
                 <button
                   type="button"
                   className="gallery-nav-arrow arrow-left"
-                  onClick={goToPrevMedia}
-                  aria-label="Previous Media"
+                  onClick={() =>
+                    setActiveMediaIndex((prev) =>
+                      prev === 0 ? media.length - 1 : prev - 1
+                    )
+                  }
+                  aria-label="Previous media"
                 >
                   ‹
                 </button>
@@ -242,48 +259,57 @@ const PerfumeDetail = () => {
                   preload="metadata"
                   className="canvas-main-video"
                 />
-              ) : (
+              ) : activeMedia ? (
                 <img
                   key={activeMediaIndex}
-                  src={resolveAssetUrl(activeMedia?.src)}
-                  alt={`${perfume.name}`}
+                  src={resolveAssetUrl(activeMedia.src)}
+                  alt={perfume.name}
                   className="canvas-main-image"
                 />
+              ) : (
+                <div className="detail-media-placeholder">
+                  Image unavailable
+                </div>
               )}
 
               {media.length > 1 && (
                 <button
                   type="button"
                   className="gallery-nav-arrow arrow-right"
-                  onClick={goToNextMedia}
-                  aria-label="Next Media"
+                  onClick={() =>
+                    setActiveMediaIndex((prev) =>
+                      prev === media.length - 1 ? 0 : prev + 1
+                    )
+                  }
+                  aria-label="Next media"
                 >
                   ›
                 </button>
               )}
             </div>
 
-            {/* Thumbnail Navigation Strip */}
             {media.length > 1 && (
-              <div className="detail-thumbnails-row">
+              <div className="detail-thumbnails-row" aria-label="Product media">
                 {media.map((item, index) => (
                   <button
                     type="button"
-                    key={item.src + index}
-                    className={`strip-thumb-btn ${index === activeMediaIndex ? 'active' : ''}`}
+                    key={`${item.src}-${index}`}
+                    className={`strip-thumb-btn ${
+                      index === activeMediaIndex ? 'active' : ''
+                    }`}
                     onClick={() => setActiveMediaIndex(index)}
+                    aria-label={`Show ${item.type} ${index + 1}`}
+                    aria-pressed={index === activeMediaIndex}
                   >
                     {item.type === 'video' ? (
                       <div className="thumb-video-container">
                         <video src={resolveAssetUrl(item.src)} muted />
-                        <span className="video-thumb-overlay">
-                          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
-                            <path d="M8 5v14l11-7z" />
-                          </svg>
+                        <span className="video-thumb-overlay" aria-hidden="true">
+                          ▶
                         </span>
                       </div>
                     ) : (
-                      <img src={resolveAssetUrl(item.src)} alt="thumbnail" />
+                      <img src={resolveAssetUrl(item.src)} alt="" />
                     )}
                   </button>
                 ))}
@@ -291,24 +317,36 @@ const PerfumeDetail = () => {
             )}
           </div>
 
-          {/* RIGHT: High-End Information Column */}
           <div className="detail-specification-col">
-            <span className="spec-brand-tag">{perfume.brand}</span>
+            {perfume.brand && (
+              <span className="spec-brand-tag">{perfume.brand}</span>
+            )}
             <h1 className="spec-perfume-title">{perfume.name}</h1>
 
-            {/* Rating Stars Summary Link */}
             <div className="spec-rating-badge-summary">
-              <div className="badge-stars">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <span key={star} className={star <= Math.round(averageRating || 0) ? 'gold-s' : 'muted-s'}>★</span>
-                ))}
+              <div
+                className="badge-stars"
+                aria-label={
+                  averageRating !== null
+                    ? `${averageRating.toFixed(1)} out of 5 stars`
+                    : 'No ratings yet'
+                }
+              >
+                {renderStars(Math.round(averageRating || 0))}
               </div>
               <span className="badge-text">
-                {averageRating ? averageRating.toFixed(1) : '0.0'} ({reviews.length} Customer Reviews)
+                {reviewsLoading
+                  ? 'Loading reviews...'
+                  : reviewsError
+                    ? 'Reviews unavailable'
+                    : averageRating !== null
+                      ? `${averageRating.toFixed(1)} (${reviews.length} ${
+                          reviews.length === 1 ? 'review' : 'reviews'
+                        })`
+                      : 'No reviews yet'}
               </span>
             </div>
 
-            {/* Price Module */}
             <div className="spec-price-card">
               <div className="price-pricing-cluster">
                 {isOnSale && (
@@ -320,43 +358,47 @@ const PerfumeDetail = () => {
                   Rs. {Number(perfume.discountPrice).toLocaleString('en-PK')}
                 </span>
               </div>
+
               <div className="price-badge-row">
-                {isOnSale && <span className="spec-sale-pill">Special Discount</span>}
-                <span className="spec-size-pill">{perfume.size}</span>
+                {isOnSale && (
+                  <span className="spec-sale-pill">Special discount</span>
+                )}
+                {perfume.size && (
+                  <span className="spec-size-pill">{perfume.size}</span>
+                )}
               </div>
             </div>
 
-            {/* Narrative Description */}
             <p className="spec-narrative-description">{perfume.description}</p>
 
-            {/* Olfactory Notes Matrix */}
             <div className="olfactory-notes-matrix">
               <div className="olfactory-card">
-                <span className="olfactory-icon">◈</span>
-                <h5>Top Notes</h5>
+                <h2>Top notes</h2>
                 <p>{perfume.topNotes}</p>
               </div>
               <div className="olfactory-card">
-                <span className="olfactory-icon">✦</span>
-                <h5>Middle Notes</h5>
+                <h2>Middle notes</h2>
                 <p>{perfume.middleNotes}</p>
               </div>
               <div className="olfactory-card">
-                <span className="olfactory-icon">✧</span>
-                <h5>Base Notes</h5>
+                <h2>Base notes</h2>
                 <p>{perfume.baseNotes}</p>
               </div>
             </div>
 
-            {/* Quantity Selector Section */}
             <div className="spec-quantity-wrapper">
               <span className="quantity-section-label">Quantity</span>
-              <div className="lux-quantity-stepper">
+              <div
+                className="lux-quantity-stepper"
+                role="group"
+                aria-label="Select quantity"
+              >
                 <button
                   type="button"
                   className="step-btn"
-                  onClick={decrementQuantity}
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   disabled={quantity <= 1}
+                  aria-label="Decrease quantity"
                 >
                   &minus;
                 </button>
@@ -364,221 +406,278 @@ const PerfumeDetail = () => {
                 <button
                   type="button"
                   className="step-btn"
-                  onClick={incrementQuantity}
+                  onClick={() => setQuantity((q) => Math.min(10, q + 1))}
                   disabled={quantity >= 10}
+                  aria-label="Increase quantity"
                 >
                   +
                 </button>
               </div>
             </div>
 
-            {/* Add To Cart Core Action */}
             <div className="spec-cta-block">
-              <button className="lux-add-to-cart-btn" onClick={handleAddToCart}>
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
-                  <path d="M19 11h-6V5h-2v6H5v2h6v6h2v-6h6z" />
-                </svg>
-                <span>Add To Cart</span>
+              <button
+                type="button"
+                className="lux-add-to-cart-btn"
+                onClick={handleAddToCart}
+              >
+                Add to cart <span aria-hidden="true">+</span>
               </button>
 
               {justAdded && (
                 <Link to="/cart" className="lux-cart-redirect-link">
-                  View Selected Bag &rarr;
+                  View your bag <span aria-hidden="true">→</span>
                 </Link>
               )}
             </div>
           </div>
-
         </div>
 
-        {/* --- LUXURY REVIEWS FEED SECTION --- */}
-        <div className="detail-reviews-wrapper">
+        <section
+          className="detail-reviews-wrapper"
+          aria-labelledby="detail-reviews-heading"
+        >
           <div className="reviews-section-header">
             <div>
-              <span className="sub-tag">Client Impressions</span>
-              <h3 className="section-title-reviews">Connoisseur Feedback</h3>
+              <span className="sub-tag">Customer experiences</span>
+              <h2 id="detail-reviews-heading" className="section-title-reviews">
+                Customer Reviews
+              </h2>
               <p className="reviews-summary-subtitle">
-                Overall score of <strong>{averageRating ? averageRating.toFixed(1) : '5.0'} ★</strong> out of {reviews.length} exclusive testimonies.
+                {reviewsLoading
+                  ? 'Loading reviews...'
+                  : reviewsError
+                    ? 'Reviews are currently unavailable.'
+                    : averageRating !== null
+                      ? `${averageRating.toFixed(1)} out of 5 · ${reviews.length} ${
+                          reviews.length === 1 ? 'review' : 'reviews'
+                        }`
+                      : 'Be the first to review this fragrance.'}
               </p>
             </div>
+
             <button
               type="button"
-              className={`write-story-toggle-btn ${showReviewForm ? 'active' : ''}`}
+              className={`write-story-toggle-btn ${
+                showReviewForm ? 'active' : ''
+              }`}
               onClick={() => setShowReviewForm((prev) => !prev)}
+              aria-expanded={showReviewForm}
+              aria-controls="detail-review-form"
             >
-              {showReviewForm ? '✕ Close Review Form' : '✦ Write a Scent Story'}
+              {showReviewForm ? 'Close review form' : 'Write a review'}
             </button>
           </div>
 
-          {/* Interactive Scent Story review Form */}
           {showReviewForm && (
-            <div className="scent-story-form-card">
+            <div id="detail-review-form" className="scent-story-form-card">
               <div className="story-form-head">
-                <h4>Share Your Experience</h4>
-                <p>Let other fragrance enthusiasts know how this signature sillage behaves.</p>
+                <h3>Share Your Experience</h3>
+                <p>Tell us what you think about this fragrance.</p>
               </div>
-              
-              <form className="scent-story-submission-form" onSubmit={handleReviewSubmit}>
+
+              <form onSubmit={handleReviewSubmit}>
                 <div className="story-form-grid">
-                  
-                  {/* Name field */}
                   <div className="story-input-field">
-                    <label htmlFor="review-name">Your Full Name</label>
+                    <label htmlFor="detail-review-name">Your name</label>
                     <input
-                      id="review-name"
+                      id="detail-review-name"
                       name="name"
                       type="text"
                       value={reviewForm.name}
                       onChange={handleReviewChange}
-                      placeholder="e.g. Zainab Shah"
+                      placeholder="Your name"
                     />
                   </div>
 
-                  {/* Interactive Star Rating Selector */}
-                  <div className="story-input-field full-row">
-                    <label>Scent Rating</label>
+                  <fieldset className="story-input-field full-row story-rating-field">
+                    <legend>Your rating</legend>
                     <div className="story-interactive-star-picker">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button
                           type="button"
                           key={star}
-                          className={`story-star-btn ${star <= (hoverRating || reviewForm.rating) ? 'filled' : ''}`}
-                          onClick={() => handleRatingSelect(star)}
+                          className={`story-star-btn ${
+                            star <= (hoverRating || reviewForm.rating)
+                              ? 'filled'
+                              : ''
+                          }`}
+                          onClick={() =>
+                            setReviewForm((prev) => ({ ...prev, rating: star }))
+                          }
                           onMouseEnter={() => setHoverRating(star)}
                           onMouseLeave={() => setHoverRating(0)}
+                          aria-label={`${star} ${star === 1 ? 'star' : 'stars'}`}
+                          aria-pressed={reviewForm.rating === star}
                         >
-                          ★
+                          <span aria-hidden="true">★</span>
                         </button>
                       ))}
                       <span className="story-rating-guide">
-                        {reviewForm.rating === 5 && 'Sillage Masterpiece'}
-                        {reviewForm.rating === 4 && 'Premium Quality'}
-                        {reviewForm.rating === 3 && 'Decent / Satisfying'}
-                        {reviewForm.rating === 2 && 'Ordinary Blend'}
-                        {reviewForm.rating === 1 && 'Unsatisfactory'}
+                        {reviewForm.rating} out of 5
                       </span>
                     </div>
-                  </div>
+                  </fieldset>
 
-                  {/* Comment field */}
                   <div className="story-input-field full-row">
-                    <label htmlFor="review-comment">Your Scent Testimony</label>
+                    <label htmlFor="detail-review-comment">Your review</label>
                     <textarea
-                      id="review-comment"
+                      id="detail-review-comment"
                       name="comment"
                       rows="4"
                       value={reviewForm.comment}
                       onChange={handleReviewChange}
-                      placeholder="Describe the projection, sillage longevity, unique olfactory traits, and complements received..."
+                      placeholder="Share your experience..."
                     />
                   </div>
 
-                  {/* Photo Upload block */}
                   <div className="story-input-field full-row">
-                    <label>Add Scent Photos <span className="label-count-sub">(Max 3 Photos)</span></label>
+                    <label htmlFor="detail-review-file">
+                      Add photos <span className="label-count-sub">(optional, max 3)</span>
+                    </label>
+
                     <div className="story-photo-dropzone">
                       <input
-                        id="review-file-input"
+                        id="detail-review-file"
                         type="file"
                         accept="image/*"
                         multiple
                         onChange={handleReviewPhotoUpload}
-                        disabled={reviewForm.photos.length >= MAX_REVIEW_PHOTOS || reviewUploading}
+                        disabled={
+                          reviewForm.photos.length >= MAX_REVIEW_PHOTOS ||
+                          reviewUploading
+                        }
                       />
-                      <label htmlFor="review-file-input" className="dropzone-trigger">
-                        <span>{reviewUploading ? 'Encrypting uploads...' : '✦ Upload custom pictures from library'}</span>
+                      <label
+                        htmlFor="detail-review-file"
+                        className="dropzone-trigger"
+                      >
+                        {reviewUploading
+                          ? 'Uploading photos...'
+                          : reviewForm.photos.length >= MAX_REVIEW_PHOTOS
+                            ? 'Maximum photos added'
+                            : '+ Choose photos'}
                       </label>
                     </div>
 
                     {reviewForm.photos.length > 0 && (
                       <div className="story-preview-gallery">
-                        {reviewForm.photos.map((photo) => (
-                          <div key={photo} className="story-preview-cell">
-                            <img src={photo} alt="Upload Preview" />
-                            <button type="button" className="story-remove-img" onClick={() => removeReviewPhoto(photo)}>✕</button>
+                        {reviewForm.photos.map((photo, index) => (
+                          <div
+                            key={`${photo}-${index}`}
+                            className="story-preview-cell"
+                          >
+                            <img src={photo} alt={`Preview ${index + 1}`} />
+                            <button
+                              type="button"
+                              className="story-remove-img"
+                              onClick={() => removeReviewPhoto(photo)}
+                              aria-label={`Remove photo ${index + 1}`}
+                            >
+                              ×
+                            </button>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
-
                 </div>
 
                 <div className="story-form-footer">
-                  <button type="submit" className="story-submit-action-btn" disabled={reviewSubmitting || reviewUploading}>
-                    {reviewSubmitting ? 'Publishing Story...' : 'Publish Scent Impression'}
+                  <button
+                    type="submit"
+                    className="story-submit-action-btn"
+                    disabled={reviewSubmitting || reviewUploading}
+                  >
+                    {reviewSubmitting ? 'Submitting review...' : 'Submit review'}
                   </button>
                 </div>
               </form>
             </div>
           )}
 
-          {/* Feedback list */}
           {reviewsLoading ? (
-            <div className="reviews-feed-loader">
-              <div className="reviews-spinner-ring"></div>
-              <p>Acquiring Verified Client Feedback...</p>
+            <div className="reviews-feed-loader" role="status">
+              <div className="reviews-spinner-ring" aria-hidden="true" />
+              <p>Loading reviews...</p>
+            </div>
+          ) : reviewsError ? (
+            <div className="reviews-feed-empty" role="alert">
+              <p>Reviews could not be loaded. Please try again later.</p>
             </div>
           ) : reviews.length === 0 ? (
             <div className="reviews-feed-empty">
-              <div className="empty-feed-sparkle">✧</div>
-              <p>No client stories registered for this fragrance yet. Be the first to publish.</p>
+              <p>No reviews yet. Be the first to share your experience.</p>
             </div>
           ) : (
             <div className="reviews-feed-cards-grid">
               {reviews.map((review) => {
-                const initials = review.name ? review.name.substring(0, 2).toUpperCase() : 'UI';
+                const initials = review.name
+                  ? review.name.substring(0, 2).toUpperCase()
+                  : 'UI';
+
                 return (
                   <article className="luxury-feed-review-card" key={review._id}>
-                    
                     <div className="review-card-head">
                       <div className="client-identity">
-                        <div className="client-initials-avatar">{initials}</div>
-                        <div>
-                          <h4 className="client-profile-name">{review.name}</h4>
-                          <span className="client-badge-verified">
-                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="3">
-                              <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                            Verified Scent Buyer
-                          </span>
+                        <div className="client-initials-avatar" aria-hidden="true">
+                          {initials}
                         </div>
+                        <h3 className="client-profile-name">{review.name}</h3>
                       </div>
+
                       <span className="client-review-date-label">
-                        {new Date(review.createdAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                        {new Date(review.createdAt).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
                       </span>
                     </div>
 
-                    <div className="review-card-stars-row">
+                    <div
+                      className="review-card-stars-row"
+                      aria-label={`${review.rating} out of 5 stars`}
+                    >
                       <div className="stars-cluster-gold">
                         {renderStars(review.rating)}
                       </div>
-                      <span className="numeric-rating-text-label">{review.rating}.0</span>
+                      <span className="numeric-rating-text-label" aria-hidden="true">
+                        {review.rating}/5
+                      </span>
                     </div>
 
-                    <p className="client-testimonial-narrative">“{review.comment}”</p>
+                    <p className="client-testimonial-narrative">
+                      “{review.comment}”
+                    </p>
 
-                    {/* Photos grid */}
                     {review.photos?.length > 0 && (
                       <div className="client-testimonial-photos-gallery">
-                        {review.photos.map((photo, idx) => (
-                          <a key={`${review._id}-${idx}`} href={photo} target="_blank" rel="noreferrer" className="feed-gallery-cell">
-                            <img src={photo} alt="User submission" />
-                            <div className="cell-expand-glass"><span>⤢</span></div>
+                        {review.photos.map((photo, index) => (
+                          <a
+                            key={`${review._id}-${index}`}
+                            href={photo}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="feed-gallery-cell"
+                            aria-label={`Open review photo ${index + 1} in a new tab`}
+                          >
+                            <img src={photo} alt={`Review photo ${index + 1}`} />
+                            <span className="cell-expand-glass" aria-hidden="true">
+                              ↗
+                            </span>
                           </a>
                         ))}
                       </div>
                     )}
-
                   </article>
                 );
               })}
             </div>
           )}
-        </div>
-
+        </section>
       </div>
-    </div>
+    </main>
   );
 };
 
