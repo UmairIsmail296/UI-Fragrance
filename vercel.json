@@ -3,6 +3,10 @@
   "outputDirectory": "ui-fragrance/client/dist",
   "rewrites": [
     {
+      "source": "/googlelead5c539971cfb3990.html",
+      "destination": "/googlelead5c539971cfb3990.html"
+    },
+    {
       "source": "/sitemap.xml",
       "destination": "https://ui-fragrance-backend.vercel.app/sitemap.xml"
     },
