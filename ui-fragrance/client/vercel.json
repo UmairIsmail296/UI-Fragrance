@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/llms.txt",
+      "destination": "/llms.txt"
+    },
+    {
       "source": "/googlelead5c539971cfb3990.html",
       "destination": "/googlelead5c539971cfb3990.html"
     },

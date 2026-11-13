@@ -99,6 +99,11 @@ const PerfumeDetail = () => {
   ];
 
   const activeMedia = media[activeMediaIndex] || media[0];
+  const productPrice = Number(perfume?.discountPrice ?? perfume?.actualPrice);
+  const productImage = perfume?.photos?.[0] || perfume?.image;
+  const productImageUrl = productImage
+    ? resolveAssetUrl(productImage)
+    : undefined;
 
   const averageRating = useMemo(() => {
     if (!reviews.length) return null;
@@ -231,7 +236,12 @@ const PerfumeDetail = () => {
         description={`${perfume.description} Shop ${perfume.name}, a long lasting perfume in Pakistan from UI Fragrance.`}
         keywords={`${perfume.name}, ${perfume.name} perfume in Pakistan, long lasting perfumes in Pakistan, UI Fragrance`}
         canonical={`/product/${perfume._id}`}
-        image={perfume.photos?.[0] || perfume.image}
+        image={productImageUrl}
+        ogType="product"
+        ogTitle={`${perfume.name} - Rs. ${productPrice} | UI Fragrance`}
+        ogDescription={perfume.description?.slice(0, 150) || ''}
+        ogUrl={`/product/${perfume._id}`}
+        ogImage={productImageUrl}
       />
       <ProductSchema product={perfume} />
       <div className="container">
