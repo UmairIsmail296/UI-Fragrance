@@ -498,6 +498,114 @@
   gap: 8px;
 }
 
+.perfume-sales-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.perfume-sales-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  padding: 18px;
+  background: var(--admin-soft);
+  border: 1px solid var(--admin-border);
+  border-radius: 9px;
+}
+
+.perfume-sales-stat span {
+  color: var(--admin-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.perfume-sales-stat strong {
+  overflow-wrap: anywhere;
+  color: var(--admin-dark);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.05rem, 2vw, 1.45rem);
+  font-weight: 600;
+}
+
+.perfume-sale-form h3 {
+  margin: 0 0 20px;
+  color: var(--admin-dark);
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.perfume-sale-form select,
+.perfume-sales-filters select,
+.perfume-sales-filters input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  color: var(--admin-text);
+  background: #fff;
+  border: 1px solid #cadbd0;
+  border-radius: 7px;
+  font-size: 0.88rem;
+}
+
+.perfume-sale-form input[readonly] {
+  color: var(--admin-green);
+  background: #f7faf7;
+  font-weight: 700;
+}
+
+.perfume-sale-form input.perfume-sale-loss {
+  color: #a93434;
+}
+
+.perfume-sale-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.perfume-sales-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 14px;
+  margin: 0 0 20px;
+}
+
+.perfume-sales-filters .form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: min(190px, 100%);
+}
+
+.perfume-sales-filters .form-group > label {
+  color: var(--admin-text);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.perfume-sales-filters .perfume-sales-search {
+  flex: 1 1 240px;
+}
+
+.perfume-sales-table {
+  min-width: 1150px;
+}
+
+.perfume-sale-profit {
+  color: var(--admin-green) !important;
+  font-weight: 700;
+}
+
+.perfume-sale-loss {
+  color: #a93434 !important;
+  font-weight: 700;
+}
+
 .admin-dashboard .mono {
   color: var(--admin-green);
   font-family: monospace;
@@ -710,6 +818,19 @@
 
   .admin-form-grid {
     grid-template-columns: 1fr;
+  }
+
+  .perfume-sales-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .perfume-sales-stat {
+    padding: 14px;
+  }
+
+  .perfume-sales-filters .form-group {
+    width: 100%;
   }
 }
 

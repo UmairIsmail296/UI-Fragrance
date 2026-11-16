@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import PerfumeManager from '../components/admin/PerfumeManager.jsx';
 import OrderManager from '../components/admin/OrderManager.jsx';
 import ReviewManager from '../components/admin/ReviewManager.jsx';
+import PerfumeSalesManager from '../components/admin/PerfumeSalesManager.jsx';
 import AnalyticsDashboard from '../components/AnalyticsDashboard.jsx';
 import './AdminDashboard.css';
 
@@ -67,12 +68,21 @@ function AdminDashboard() {
         >
           Reviews
         </button>
+        <button
+          type="button"
+          className={`admin-tab ${activeTab === 'sales' ? 'active' : ''}`}
+          onClick={() => setActiveTab('sales')}
+          aria-current={activeTab === 'sales' ? 'page' : undefined}
+        >
+          Perfume Sales
+        </button>
       </nav>
 
       <main className="container admin-main">
         {activeTab === 'perfumes' && <PerfumeManager />}
         {activeTab === 'orders' && <OrderManager />}
         {activeTab === 'reviews' && <ReviewManager />}
+        {activeTab === 'sales' && <PerfumeSalesManager />}
       </main>
     </div>
   );
