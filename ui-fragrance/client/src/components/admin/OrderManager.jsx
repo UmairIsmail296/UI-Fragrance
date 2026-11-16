@@ -43,6 +43,7 @@ const OrderManager = () => {
     try {
       const { data } = await api.put(`/orders/${orderId}/status`, { orderStatus: newStatus });
       toast.success('Order status updated');
+      window.dispatchEvent(new Event('sales-data-updated'));
       setOrders((prev) =>
         prev.map((o) => (o._id === orderId ? { ...o, ...data } : o))
       );
@@ -70,6 +71,7 @@ const OrderManager = () => {
     try {
       await api.delete(`/orders/${orderToDelete._id}`);
       toast.success('Order deleted successfully.');
+      window.dispatchEvent(new Event('sales-data-updated'));
       setOrders((prev) => prev.filter((o) => o._id !== orderToDelete._id));
       setOrderToDelete(null);
     } catch (error) {

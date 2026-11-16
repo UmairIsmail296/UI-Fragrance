@@ -13,6 +13,8 @@ const emptyForm = () => ({
   quantity: '1',
   purchasePrice: '',
   sellingPrice: '',
+  paymentMethod: '',
+  addedBy: '',
   saleDate: todayString(),
   customerName: '',
   notes: '',
@@ -131,6 +133,8 @@ const PerfumeSalesManager = () => {
       quantity: String(sale.quantity),
       purchasePrice: String(sale.purchasePrice),
       sellingPrice: String(sale.sellingPrice),
+      paymentMethod: sale.paymentMethod || '',
+      addedBy: sale.addedBy || '',
       saleDate: new Date(sale.saleDate).toISOString().slice(0, 10),
       customerName: sale.customerName || '',
       notes: sale.notes || '',
@@ -176,6 +180,8 @@ const PerfumeSalesManager = () => {
       quantity: parsedQuantity,
       purchasePrice: parsedPurchasePrice,
       sellingPrice: parsedSellingPrice,
+      paymentMethod: form.paymentMethod,
+      addedBy: form.addedBy,
       saleDate: form.saleDate,
       customerName: form.customerName,
       notes: form.notes,
@@ -189,6 +195,7 @@ const PerfumeSalesManager = () => {
         await api.post('/perfume-sales', payload);
         toast.success('Sale added successfully');
       }
+      window.dispatchEvent(new Event('sales-data-updated'));
       resetForm();
       setRefreshKey((key) => key + 1);
     } catch (error) {
@@ -203,6 +210,7 @@ const PerfumeSalesManager = () => {
     try {
       await api.delete(`/perfume-sales/${sale._id}`);
       toast.success('Sale deleted successfully');
+      window.dispatchEvent(new Event('sales-data-updated'));
       setRefreshKey((key) => key + 1);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to delete sale');
@@ -288,6 +296,23 @@ const PerfumeSalesManager = () => {
               <input id="sale-selling-price" name="sellingPrice" type="number" min="0" step="0.01" value={form.sellingPrice} onChange={handleChange} required />
             </div>
             <div className="form-group">
+              <label htmlFor="sale-payment-method">Payment Method *</label>
+              <select id="sale-payment-method" name="paymentMethod" value={form.paymentMethod} onChange={handleChange} required>
+                <option value="">Select a payment method</option>
+                <option value="Cash">Cash</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="sale-added-by">Added By *</label>
+              <select id="sale-added-by" name="addedBy" value={form.addedBy} onChange={handleChange} required>
+                <option value="">Select an admin</option>
+                <option value="Umair">Umair</option>
+                <option value="Ibsham">Ibsham</option>
+              </select>
+            </div>
+            <div className="form-group">
               <label htmlFor="sale-total-amount">Total Sale Amount</label>
               <input id="sale-total-amount" value={formatMoney(totalAmount)} readOnly />
             </div>
@@ -369,12 +394,11 @@ const PerfumeSalesManager = () => {
               <tr>
                 <th>Perfume Name</th>
                 <th>Quantity</th>
-                <th>Purchase Price</th>
-                <th>Selling Price</th>
+                <th>Price</th>
                 <th>Total Amount</th>
-                <th>Total Cost</th>
-                <th>Profit</th>
                 <th>Sale Date</th>
+                <th>Payment Method</th>
+                <th>Added By</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -383,12 +407,11 @@ const PerfumeSalesManager = () => {
                 <tr key={sale._id}>
                   <td title={sale.notes || undefined}>{sale.perfumeName}</td>
                   <td>{sale.quantity}</td>
-                  <td>{formatMoney(sale.purchasePrice)}</td>
                   <td>{formatMoney(sale.sellingPrice)}</td>
                   <td>{formatMoney(sale.totalSaleAmount)}</td>
-                  <td>{formatMoney(sale.totalCost)}</td>
-                  <td className={sale.profit < 0 ? 'perfume-sale-loss' : 'perfume-sale-profit'}>{formatMoney(sale.profit)}</td>
                   <td>{formatDate(sale.saleDate)}</td>
+                  <td>{sale.paymentMethod || '—'}</td>
+                  <td>{sale.addedBy || '—'}</td>
                   <td>
                     <div className="admin-table-actions">
                       <button type="button" className="btn-outline small" onClick={() => handleEdit(sale)}>Edit</button>
@@ -398,7 +421,7 @@ const PerfumeSalesManager = () => {
                 </tr>
               ))}
               {sales.length === 0 && (
-                <tr><td colSpan={9} className="text-center">No perfume sales found.</td></tr>
+                <tr><td colSpan={8} className="text-center">No perfume sales found.</td></tr>
               )}
             </tbody>
           </table>

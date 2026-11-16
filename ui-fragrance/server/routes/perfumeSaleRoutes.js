@@ -6,12 +6,16 @@ const Perfume = require('../models/Perfume');
 const { protectAdmin } = require('../middleware/authMiddleware');
 
 const roundMoney = (value) => Math.round((value + Number.EPSILON) * 100) / 100;
+const PAYMENT_METHODS = ['Cash', 'Bank Transfer', 'Other'];
+const SALE_ADMINS = ['Umair', 'Ibsham'];
 
 const parseSaleInput = async (body) => {
   const perfumeName = typeof body.perfumeName === 'string' ? body.perfumeName.trim() : '';
   const quantity = Number(body.quantity);
   const purchasePrice = Number(body.purchasePrice);
   const sellingPrice = Number(body.sellingPrice);
+  const paymentMethod = typeof body.paymentMethod === 'string' ? body.paymentMethod : '';
+  const addedBy = typeof body.addedBy === 'string' ? body.addedBy : '';
   const saleDateValue = typeof body.saleDate === 'string' ? body.saleDate : '';
   const saleDate = /^\d{4}-\d{2}-\d{2}$/.test(saleDateValue)
     ? new Date(`${saleDateValue}T00:00:00.000Z`)
@@ -30,6 +34,12 @@ const parseSaleInput = async (body) => {
     sellingPrice < 0
   ) {
     return { error: 'Purchase and selling prices must be valid non-negative numbers' };
+  }
+  if (!PAYMENT_METHODS.includes(paymentMethod)) {
+    return { error: 'Select a valid payment method' };
+  }
+  if (!SALE_ADMINS.includes(addedBy)) {
+    return { error: 'Select who added this sale' };
   }
   if (
     !Number.isFinite(saleDate.getTime()) ||
@@ -64,6 +74,8 @@ const parseSaleInput = async (body) => {
       quantity,
       purchasePrice: normalizedPurchasePrice,
       sellingPrice: normalizedSellingPrice,
+      paymentMethod,
+      addedBy,
       totalSaleAmount,
       totalCost,
       profit: roundMoney(totalSaleAmount - totalCost),

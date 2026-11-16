@@ -28,6 +28,16 @@ const perfumeSaleSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
+    paymentMethod: {
+      type: String,
+      enum: ['Cash', 'Bank Transfer', 'Other'],
+      required: true,
+    },
+    addedBy: {
+      type: String,
+      enum: ['Umair', 'Ibsham'],
+      required: true,
+    },
     totalSaleAmount: {
       type: Number,
       required: true,
