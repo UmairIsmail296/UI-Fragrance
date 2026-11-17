@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api from '../../utils/api.js';
 
@@ -13,10 +14,11 @@ const emptyForm = () => ({
   quantity: '1',
   purchasePrice: '',
   sellingPrice: '',
-  paymentMethod: '',
+  paymentStatus: '',
   addedBy: '',
   saleDate: todayString(),
   customerName: '',
+  customerPhone: '',
   notes: '',
 });
 
@@ -48,6 +50,7 @@ const formatDate = (value) => {
 };
 
 const PerfumeSalesManager = () => {
+  const navigate = useNavigate();
   const [sales, setSales] = useState([]);
   const [perfumes, setPerfumes] = useState([]);
   const [summary, setSummary] = useState({
@@ -133,10 +136,11 @@ const PerfumeSalesManager = () => {
       quantity: String(sale.quantity),
       purchasePrice: String(sale.purchasePrice),
       sellingPrice: String(sale.sellingPrice),
-      paymentMethod: sale.paymentMethod || '',
+      paymentStatus: sale.paymentStatus || 'Pending',
       addedBy: sale.addedBy || '',
       saleDate: new Date(sale.saleDate).toISOString().slice(0, 10),
       customerName: sale.customerName || '',
+      customerPhone: sale.customerPhone || '',
       notes: sale.notes || '',
     });
     setEditingId(sale._id);
@@ -180,10 +184,11 @@ const PerfumeSalesManager = () => {
       quantity: parsedQuantity,
       purchasePrice: parsedPurchasePrice,
       sellingPrice: parsedSellingPrice,
-      paymentMethod: form.paymentMethod,
+      paymentStatus: form.paymentStatus,
       addedBy: form.addedBy,
       saleDate: form.saleDate,
       customerName: form.customerName,
+      customerPhone: form.customerPhone,
       notes: form.notes,
     };
     setSaving(true);
@@ -203,6 +208,26 @@ const PerfumeSalesManager = () => {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handlePaymentStatusChange = async (sale, paymentStatus) => {
+    try {
+      const response = await api.patch(`/perfume-sales/${sale._id}/payment-status`, { paymentStatus });
+      setSales((previous) => previous.map((item) => (
+        item._id === sale._id ? { ...item, paymentStatus: response.data.paymentStatus } : item
+      )));
+      window.dispatchEvent(new Event('sales-data-updated'));
+      toast.success('Payment status updated');
+    } catch (error) {
+      setSales((previous) => previous.map((item) => (
+        item._id === sale._id ? { ...item } : item
+      )));
+      toast.error(error.response?.data?.message || 'Failed to update payment status');
+    }
+  };
+
+  const openSaleDetails = (sale) => {
+    navigate(`/admin/sales/${sale._id}`, { state: { activeTab: 'sales' } });
   };
 
   const handleDelete = async (sale) => {
@@ -296,20 +321,19 @@ const PerfumeSalesManager = () => {
               <input id="sale-selling-price" name="sellingPrice" type="number" min="0" step="0.01" value={form.sellingPrice} onChange={handleChange} required />
             </div>
             <div className="form-group">
-              <label htmlFor="sale-payment-method">Payment Method *</label>
-              <select id="sale-payment-method" name="paymentMethod" value={form.paymentMethod} onChange={handleChange} required>
-                <option value="">Select a payment method</option>
-                <option value="Cash">Cash</option>
-                <option value="Bank Transfer">Bank Transfer</option>
-                <option value="Other">Other</option>
+              <label htmlFor="sale-payment-status">Payment Status *</label>
+              <select id="sale-payment-status" name="paymentStatus" value={form.paymentStatus} onChange={handleChange} required>
+                <option value="">Select a payment status</option>
+                <option value="Paid">Paid</option>
+                <option value="Pending">Pending</option>
               </select>
             </div>
             <div className="form-group">
               <label htmlFor="sale-added-by">Added By *</label>
               <select id="sale-added-by" name="addedBy" value={form.addedBy} onChange={handleChange} required>
                 <option value="">Select an admin</option>
+                <option value="Ibsham Fayyaz">Ibsham Fayyaz</option>
                 <option value="Umair">Umair</option>
-                <option value="Ibsham">Ibsham</option>
               </select>
             </div>
             <div className="form-group">
@@ -331,6 +355,10 @@ const PerfumeSalesManager = () => {
             <div className="form-group">
               <label htmlFor="sale-customer">Customer Name (optional)</label>
               <input id="sale-customer" name="customerName" value={form.customerName} onChange={handleChange} />
+            </div>
+            <div className="form-group">
+              <label htmlFor="sale-customer-phone">Customer Phone (optional)</label>
+              <input id="sale-customer-phone" name="customerPhone" type="tel" value={form.customerPhone} onChange={handleChange} />
             </div>
             <div className="form-group admin-form-full">
               <label htmlFor="sale-notes">Notes (optional)</label>
@@ -397,25 +425,48 @@ const PerfumeSalesManager = () => {
                 <th>Price</th>
                 <th>Total Amount</th>
                 <th>Sale Date</th>
-                <th>Payment Method</th>
+                <th>Payment Status</th>
                 <th>Added By</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {sales.map((sale) => (
-                <tr key={sale._id}>
+                <tr
+                  key={sale._id}
+                  className="perfume-sale-clickable-row"
+                  onClick={() => openSaleDetails(sale)}
+                  onKeyDown={(event) => {
+                    if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) {
+                      event.preventDefault();
+                      openSaleDetails(sale);
+                    }
+                  }}
+                  tabIndex={0}
+                  aria-label={`View details for ${sale.perfumeName}`}
+                >
                   <td title={sale.notes || undefined}>{sale.perfumeName}</td>
                   <td>{sale.quantity}</td>
                   <td>{formatMoney(sale.sellingPrice)}</td>
                   <td>{formatMoney(sale.totalSaleAmount)}</td>
                   <td>{formatDate(sale.saleDate)}</td>
-                  <td>{sale.paymentMethod || '—'}</td>
+                  <td>
+                    <select
+                      className={`sale-payment-status-badge ${sale.paymentStatus === 'Paid' ? 'is-paid' : 'is-pending'}`}
+                      value={sale.paymentStatus || 'Pending'}
+                      aria-label={`Payment status for ${sale.perfumeName}`}
+                      onClick={(event) => event.stopPropagation()}
+                      onChange={(event) => handlePaymentStatusChange(sale, event.target.value)}
+                    >
+                      <option value="Paid">Paid</option>
+                      <option value="Pending">Pending</option>
+                    </select>
+                  </td>
                   <td>{sale.addedBy || '—'}</td>
                   <td>
                     <div className="admin-table-actions">
-                      <button type="button" className="btn-outline small" onClick={() => handleEdit(sale)}>Edit</button>
-                      <button type="button" className="btn-danger small" onClick={() => handleDelete(sale)}>Delete</button>
+                      <button type="button" className="btn-outline small" onClick={(event) => { event.stopPropagation(); handleEdit(sale); }}>Edit</button>
+                      <button type="button" className="btn-danger small" onClick={(event) => { event.stopPropagation(); handleDelete(sale); }}>Delete</button>
                     </div>
                   </td>
                 </tr>

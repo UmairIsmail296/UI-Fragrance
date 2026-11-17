@@ -596,6 +596,39 @@
   min-width: 1150px;
 }
 
+.perfume-sale-clickable-row {
+  cursor: pointer;
+}
+
+.perfume-sale-clickable-row:focus-visible > td {
+  outline: 2px solid #83b99a;
+  outline-offset: -2px;
+}
+
+.sale-payment-status-badge {
+  min-width: 88px;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+}
+
+.sale-payment-status-badge.is-paid {
+  color: #17613a;
+  background: #e7f5eb;
+  border-color: #b7dfc2;
+}
+
+.sale-payment-status-badge.is-pending {
+  color: #9a5a08;
+  background: #fff2dd;
+  border-color: #f0d09a;
+}
+
 .perfume-sale-profit {
   color: var(--admin-green) !important;
   font-weight: 700;

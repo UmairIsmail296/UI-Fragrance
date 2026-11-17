@@ -6,15 +6,24 @@ const Perfume = require('../models/Perfume');
 const { protectAdmin } = require('../middleware/authMiddleware');
 
 const roundMoney = (value) => Math.round((value + Number.EPSILON) * 100) / 100;
-const PAYMENT_METHODS = ['Cash', 'Bank Transfer', 'Other'];
-const SALE_ADMINS = ['Umair', 'Ibsham'];
+const PAYMENT_STATUSES = ['Paid', 'Pending'];
+const LEGACY_PAYMENT_METHODS = ['Cash', 'Bank Transfer', 'Other'];
+const SALE_ADMINS = ['Ibsham Fayyaz', 'Umair'];
+
+const serializeSale = (sale) => ({
+  ...sale,
+  paymentStatus: PAYMENT_STATUSES.includes(sale.paymentStatus)
+    ? sale.paymentStatus
+    : LEGACY_PAYMENT_METHODS.includes(sale.paymentMethod) ? 'Paid' : 'Pending',
+  addedBy: sale.addedBy === 'Ibsham' ? 'Ibsham Fayyaz' : sale.addedBy,
+});
 
 const parseSaleInput = async (body) => {
   const perfumeName = typeof body.perfumeName === 'string' ? body.perfumeName.trim() : '';
   const quantity = Number(body.quantity);
   const purchasePrice = Number(body.purchasePrice);
   const sellingPrice = Number(body.sellingPrice);
-  const paymentMethod = typeof body.paymentMethod === 'string' ? body.paymentMethod : '';
+  const paymentStatus = typeof body.paymentStatus === 'string' ? body.paymentStatus : '';
   const addedBy = typeof body.addedBy === 'string' ? body.addedBy : '';
   const saleDateValue = typeof body.saleDate === 'string' ? body.saleDate : '';
   const saleDate = /^\d{4}-\d{2}-\d{2}$/.test(saleDateValue)
@@ -35,8 +44,8 @@ const parseSaleInput = async (body) => {
   ) {
     return { error: 'Purchase and selling prices must be valid non-negative numbers' };
   }
-  if (!PAYMENT_METHODS.includes(paymentMethod)) {
-    return { error: 'Select a valid payment method' };
+  if (!PAYMENT_STATUSES.includes(paymentStatus)) {
+    return { error: 'Select a valid payment status' };
   }
   if (!SALE_ADMINS.includes(addedBy)) {
     return { error: 'Select who added this sale' };
@@ -74,13 +83,14 @@ const parseSaleInput = async (body) => {
       quantity,
       purchasePrice: normalizedPurchasePrice,
       sellingPrice: normalizedSellingPrice,
-      paymentMethod,
+      paymentStatus,
       addedBy,
       totalSaleAmount,
       totalCost,
       profit: roundMoney(totalSaleAmount - totalCost),
       saleDate,
       customerName: typeof body.customerName === 'string' ? body.customerName.trim() : '',
+      customerPhone: typeof body.customerPhone === 'string' ? body.customerPhone.trim() : '',
       notes: typeof body.notes === 'string' ? body.notes.trim() : '',
     },
   };
@@ -129,10 +139,32 @@ router.get('/', async (req, res) => {
       { totalSales: 0, totalPerfumesSold: 0, totalRevenue: 0, totalProfit: 0 }
     );
 
-    res.status(200).json({ sales, summary });
+    res.status(200).json({ sales: sales.map(serializeSale), summary });
   } catch (error) {
     console.error('Failed to fetch perfume sales:', error);
     res.status(500).json({ message: 'Server error while fetching perfume sales' });
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(400).json({ message: 'Sale ID is invalid' });
+  }
+
+  try {
+    const sale = await PerfumeSale.findById(req.params.id).lean();
+    if (!sale) return res.status(404).json({ message: 'Sale not found' });
+
+    const perfume = sale.perfumeId
+      ? await Perfume.findById(sale.perfumeId).select('photos').lean()
+      : null;
+    res.status(200).json({
+      ...serializeSale(sale),
+      perfumeImage: perfume?.photos?.[0] || '',
+    });
+  } catch (error) {
+    console.error('Failed to fetch perfume sale details:', error);
+    res.status(500).json({ message: 'Server error while fetching perfume sale details' });
   }
 });
 
@@ -146,6 +178,28 @@ router.post('/', async (req, res) => {
   } catch (error) {
     console.error('Failed to create perfume sale:', error);
     res.status(500).json({ message: 'Server error while creating perfume sale' });
+  }
+});
+
+router.patch('/:id/payment-status', async (req, res) => {
+  if (!mongoose.isValidObjectId(req.params.id)) {
+    return res.status(400).json({ message: 'Sale ID is invalid' });
+  }
+  if (!PAYMENT_STATUSES.includes(req.body?.paymentStatus)) {
+    return res.status(400).json({ message: 'Select a valid payment status' });
+  }
+
+  try {
+    const sale = await PerfumeSale.findByIdAndUpdate(
+      req.params.id,
+      { $set: { paymentStatus: req.body.paymentStatus } },
+      { new: true, runValidators: true }
+    ).lean();
+    if (!sale) return res.status(404).json({ message: 'Sale not found' });
+    res.status(200).json(serializeSale(sale));
+  } catch (error) {
+    console.error('Failed to update perfume sale payment status:', error);
+    res.status(500).json({ message: 'Server error while updating payment status' });
   }
 });
 

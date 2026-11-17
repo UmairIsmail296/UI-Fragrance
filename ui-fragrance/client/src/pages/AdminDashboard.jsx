@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import PerfumeManager from '../components/admin/PerfumeManager.jsx';
 import OrderManager from '../components/admin/OrderManager.jsx';
@@ -9,7 +9,8 @@ import AnalyticsDashboard from '../components/AnalyticsDashboard.jsx';
 import './AdminDashboard.css';
 
 function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('perfumes');
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState(location.state?.activeTab || 'perfumes');
   const { admin, logout } = useAuth();
   const navigate = useNavigate();
 

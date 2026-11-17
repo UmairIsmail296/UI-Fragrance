@@ -27,6 +27,7 @@ import PaymentConfirmationPage from './pages/PaymentConfirmationPage.jsx';
 import OrderSuccessPage from './pages/OrderSuccessPage.jsx'; // NEW
 import AdminLogin from './pages/AdminLogin.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
+import AdminSaleDetails from './pages/AdminSaleDetails.jsx';
 
 const PublicLayout = ({ children }) => (
   <>
@@ -74,6 +75,14 @@ function App() {
             element={
               <ProtectedAdminRoute>
                 <AdminDashboard />
+              </ProtectedAdminRoute>
+            }
+          />
+          <Route
+            path="/admin/sales/:id"
+            element={
+              <ProtectedAdminRoute>
+                <AdminSaleDetails />
               </ProtectedAdminRoute>
             }
           />

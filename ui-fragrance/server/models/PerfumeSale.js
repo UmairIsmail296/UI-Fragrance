@@ -28,14 +28,14 @@ const perfumeSaleSchema = new mongoose.Schema(
       required: true,
       min: 0,
     },
-    paymentMethod: {
+    paymentStatus: {
       type: String,
-      enum: ['Cash', 'Bank Transfer', 'Other'],
+      enum: ['Paid', 'Pending'],
       required: true,
     },
     addedBy: {
       type: String,
-      enum: ['Umair', 'Ibsham'],
+      enum: ['Ibsham Fayyaz', 'Umair'],
       required: true,
     },
     totalSaleAmount: {
@@ -57,6 +57,11 @@ const perfumeSaleSchema = new mongoose.Schema(
       required: true,
     },
     customerName: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    customerPhone: {
       type: String,
       trim: true,
       default: '',
