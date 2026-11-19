@@ -73,6 +73,8 @@ export default function Footer() {
               <li><Link to="/">Home</Link></li>
               <li><Link to="/shop">Fragrance Collection</Link></li>
               <li><Link to="/about">About &amp; Founders</Link></li>
+              <li><Link to="/contact">Contact Us</Link></li>
+              <li><Link to="/faq">Frequently Asked Questions</Link></li>
               <li><Link to="/track-order">Track Your Order</Link></li>
             </ul>
           </nav>

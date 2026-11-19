@@ -20,6 +20,8 @@ import Shop from './pages/Shop.jsx';
 import PerfumeDetail from './pages/PerfumeDetail.jsx';
 import CustomerReviews from './pages/CustomerReviews.jsx';
 import AboutUs from './pages/AboutUs.jsx';
+import ContactUs from './pages/ContactUs.jsx';
+import FAQPage from './pages/FAQPage.jsx';
 import TrackOrderPage from './pages/TrackOrderPage.jsx';
 import CartPage from './pages/CartPage.jsx'; // NEW
 import CheckoutPage from './pages/CheckoutPage.jsx'; // NEW
@@ -96,6 +98,8 @@ function App() {
             <Route path="/product/:id" element={<PerfumeDetail />} />
             <Route path="/reviews" element={<CustomerReviews />} />
             <Route path="/about" element={<AboutUs />} />
+            <Route path="/contact" element={<ContactUs />} />
+            <Route path="/faq" element={<FAQPage />} />
             <Route path="/track-order" element={<TrackOrderPage />} />
             {/* NEW: cart / checkout / order success routes (Change 3) */}
             <Route path="/cart" element={<CartPage />} />

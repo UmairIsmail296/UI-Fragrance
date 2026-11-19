@@ -40,6 +40,7 @@ app.use('/api/perfumes', require('./routes/perfumeRoutes'));
 app.use('/api/perfume-sales', require('./routes/perfumeSaleRoutes'));
 app.use('/api/orders', require('./routes/orderRoutes'));
 app.use('/api/reviews', require('./routes/reviewRoutes'));
+app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/admin', require('./routes/adminRoutes'));
 // NEW: visitor logging (POST /api/visitors) + analytics (GET /api/analytics/*)
 app.use('/api', require('./routes/visitorRoutes'));
