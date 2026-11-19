@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const TrackingId = require('../models/TrackingId');
 
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
@@ -13,24 +14,32 @@ const generateRawId = () => {
   return `UIF-${id}`;
 };
 
-// Generates a tracking ID and guarantees uniqueness against the Order
-// collection by regenerating on collision. `OrderModel` is passed in
-// (rather than required here) to avoid a circular require with models/Order.js.
-const generateTrackingId = async (OrderModel, attempt = 0) => {
+// The registry's unique index atomically reserves IDs across order types.
+const generateTrackingId = async (OrderModel, PerfumeSaleModel, attempt = 0) => {
   if (attempt > 10) {
-    // Astronomically unlikely with 36^6 (~2.2 billion) combinations, but
-    // fail loudly rather than looping forever if something is very wrong.
     throw new Error('Unable to generate a unique tracking ID after 10 attempts');
   }
 
+  await TrackingId.init();
   const candidate = generateRawId();
-  const existing = await OrderModel.findOne({ orderId: candidate });
+  const [existingOrder, existingSale] = await Promise.all([
+    OrderModel.findOne({ orderId: { $regex: new RegExp(`^${candidate}$`, 'i') } }).select('_id').lean(),
+    PerfumeSaleModel.findOne({ trackingId: { $regex: new RegExp(`^${candidate}$`, 'i') } }).select('_id').lean(),
+  ]);
 
-  if (existing) {
-    return generateTrackingId(OrderModel, attempt + 1);
+  if (existingOrder || existingSale) {
+    return generateTrackingId(OrderModel, PerfumeSaleModel, attempt + 1);
   }
 
-  return candidate;
+  try {
+    await TrackingId.create({ trackingId: candidate });
+    return candidate;
+  } catch (error) {
+    if (error.code === 11000) {
+      return generateTrackingId(OrderModel, PerfumeSaleModel, attempt + 1);
+    }
+    throw error;
+  }
 };
 
 module.exports = generateTrackingId;

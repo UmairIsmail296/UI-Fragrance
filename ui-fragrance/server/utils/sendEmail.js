@@ -340,6 +340,52 @@ const buildOrderConfirmationHtml = (order) => {
   return emailShell(body);
 };
 
+const buildPhysicalSaleConfirmationHtml = (sale) => {
+  const safeName = escapeHtml(sale.customerName || 'Valued Customer');
+  const safeTrackingId = escapeHtml(sale.trackingId);
+  const safePerfumeName = escapeHtml(sale.perfumeName);
+  const safeQuantity = escapeHtml(sale.quantity);
+  const orderDate = new Date(sale.saleDate).toLocaleDateString('en-PK', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  const safeOrderDate = escapeHtml(orderDate);
+  const trackingUrl = 'https://www.ui-fragrance.store/track-order';
+
+  return emailShell(`
+    <h2 style="margin:0 0 12px; color:#163c2b; font-family:Georgia, serif; font-size:23px; font-weight:normal; line-height:1.35;">
+      Thank you, ${safeName}!
+    </h2>
+    <p style="margin:0 0 26px; color:#6d7f72; font-size:14px; line-height:1.7;">
+      Your perfume sale has been confirmed. Use your tracking ID below to view its status.
+    </p>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px; background-color:#f3f8f4; border:1px solid #dce9df; border-radius:8px;">
+      <tr>
+        <td align="center" style="padding:20px;">
+          <p style="margin:0 0 8px; color:#6d7f72; font-size:10px; font-weight:bold; letter-spacing:2px; text-transform:uppercase;">Your tracking ID</p>
+          <p class="tracking-code" style="margin:0; color:#174b35; font-size:21px; font-weight:bold; letter-spacing:2px;">${safeTrackingId}</p>
+        </td>
+      </tr>
+    </table>
+    <h3 style="margin:0 0 14px; color:#163c2b; font-family:Georgia, serif; font-size:18px; font-weight:normal;">Order details</h3>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px; border:1px solid #e5efe7;">
+      <tbody>
+        <tr><th scope="row" style="padding:12px 10px; text-align:left; color:#60766a; font-size:13px;">Customer name</th><td style="padding:12px 10px; text-align:right; color:#163c2b; font-size:13px;">${safeName}</td></tr>
+        <tr><th scope="row" style="padding:12px 10px; text-align:left; color:#60766a; font-size:13px;">Perfume</th><td style="padding:12px 10px; text-align:right; color:#163c2b; font-size:13px;">${safePerfumeName}</td></tr>
+        <tr><th scope="row" style="padding:12px 10px; text-align:left; color:#60766a; font-size:13px;">Quantity</th><td style="padding:12px 10px; text-align:right; color:#163c2b; font-size:13px;">${safeQuantity}</td></tr>
+        <tr><th scope="row" style="padding:12px 10px; text-align:left; color:#60766a; font-size:13px;">Order date</th><td style="padding:12px 10px; text-align:right; color:#163c2b; font-size:13px;">${safeOrderDate}</td></tr>
+      </tbody>
+    </table>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:28px 0;">
+      <tr><td align="center">
+        <a href="${trackingUrl}" target="_blank" rel="noopener noreferrer" style="display:inline-block; padding:14px 30px; background-color:#174b35; border-radius:6px; color:#ffffff; font-size:12px; font-weight:bold; letter-spacing:1px; text-decoration:none; text-transform:uppercase;">Track your order</a>
+        <p style="margin:12px 0 0; color:#6d7f72; font-size:12px;"><a href="${trackingUrl}" style="color:#174b35;">${trackingUrl}</a></p>
+      </td></tr>
+    </table>
+  `);
+};
+
 // Send order confirmation
 const sendOrderConfirmationEmail = async (order) => {
   const fromEmail =
@@ -369,4 +415,29 @@ const sendOrderConfirmationEmail = async (order) => {
   }
 };
 
-module.exports = { sendOrderConfirmationEmail };
+const sendPhysicalSaleConfirmationEmail = async (sale) => {
+  const fromEmail =
+    process.env.FROM_EMAIL || process.env.EMAIL_USER || process.env.SMTP_USER;
+
+  try {
+    const transporter = createTransporter();
+
+    await transporter.sendMail({
+      from: `"UI Fragrance" <${fromEmail}>`,
+      to: sale.customerEmail,
+      subject: `Sale Confirmed: ${sale.trackingId} | UI Fragrance`,
+      html: buildPhysicalSaleConfirmationHtml(sale),
+    });
+
+    return true;
+  } catch (error) {
+    console.error('--- Failed to send physical sale confirmation email ---');
+    console.error('Message:', error.message);
+    if (error.code) console.error('Code:', error.code);
+    if (error.response) console.error('SMTP response:', error.response);
+    console.error('--------------------------------------------------------');
+    return false;
+  }
+};
+
+module.exports = { sendOrderConfirmationEmail, sendPhysicalSaleConfirmationEmail };

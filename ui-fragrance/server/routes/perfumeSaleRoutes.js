@@ -3,7 +3,10 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const PerfumeSale = require('../models/PerfumeSale');
 const Perfume = require('../models/Perfume');
+const Order = require('../models/Order');
 const { protectAdmin } = require('../middleware/authMiddleware');
+const generateTrackingId = require('../utils/generateTrackingId');
+const { sendPhysicalSaleConfirmationEmail } = require('../utils/sendEmail');
 
 const roundMoney = (value) => Math.round((value + Number.EPSILON) * 100) / 100;
 const PAYMENT_STATUSES = ['Paid', 'Pending'];
@@ -25,6 +28,7 @@ const parseSaleInput = async (body) => {
   const sellingPrice = Number(body.sellingPrice);
   const paymentStatus = typeof body.paymentStatus === 'string' ? body.paymentStatus : '';
   const addedBy = typeof body.addedBy === 'string' ? body.addedBy : '';
+  const customerEmail = typeof body.customerEmail === 'string' ? body.customerEmail.trim().toLowerCase() : '';
   const saleDateValue = typeof body.saleDate === 'string' ? body.saleDate : '';
   const saleDate = /^\d{4}-\d{2}-\d{2}$/.test(saleDateValue)
     ? new Date(`${saleDateValue}T00:00:00.000Z`)
@@ -49,6 +53,9 @@ const parseSaleInput = async (body) => {
   }
   if (!SALE_ADMINS.includes(addedBy)) {
     return { error: 'Select who added this sale' };
+  }
+  if (customerEmail && !/^\S+@\S+\.\S+$/.test(customerEmail)) {
+    return { error: 'Please enter a valid customer email address' };
   }
   if (
     !Number.isFinite(saleDate.getTime()) ||
@@ -90,6 +97,7 @@ const parseSaleInput = async (body) => {
       profit: roundMoney(totalSaleAmount - totalCost),
       saleDate,
       customerName: typeof body.customerName === 'string' ? body.customerName.trim() : '',
+      customerEmail,
       customerPhone: typeof body.customerPhone === 'string' ? body.customerPhone.trim() : '',
       notes: typeof body.notes === 'string' ? body.notes.trim() : '',
     },
@@ -173,8 +181,24 @@ router.post('/', async (req, res) => {
     const parsed = await parseSaleInput(req.body);
     if (parsed.error) return res.status(400).json({ message: parsed.error });
 
-    const sale = await PerfumeSale.create(parsed.value);
-    res.status(201).json(sale);
+    const trackingId = await generateTrackingId(Order, PerfumeSale);
+    const sale = await PerfumeSale.create({ ...parsed.value, trackingId });
+    const emailSent = sale.customerEmail
+      ? await sendPhysicalSaleConfirmationEmail(sale)
+      : null;
+    if (emailSent === false) {
+      console.error(`Physical sale ${sale.trackingId} was created but the confirmation email was not delivered.`);
+    }
+
+    res.status(201).json({
+      ...serializeSale(sale.toObject()),
+      emailSent,
+      message: emailSent === false
+        ? 'Sale added successfully, but the confirmation email could not be delivered.'
+        : emailSent
+          ? 'Sale added successfully. A confirmation email has been sent.'
+          : 'Sale added successfully.',
+    });
   } catch (error) {
     console.error('Failed to create perfume sale:', error);
     res.status(500).json({ message: 'Server error while creating perfume sale' });

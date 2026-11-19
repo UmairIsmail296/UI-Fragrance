@@ -22,6 +22,12 @@ const formatAmount = (value) => {
     : '—';
 };
 
+const formatDate = (value) => (value ? new Date(value).toLocaleDateString(undefined, {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}) : '—');
+
 const getStatusClass = (status = '') => {
   const value = String(status).toLowerCase();
 
@@ -223,9 +229,15 @@ const TrackOrder = () => {
               </button>
             </div>
 
-            <div className={`status-pill ${getStatusClass(order.orderStatus)}`}>
+            <div className={`status-pill ${
+              order.trackingType === 'physical' && order.paymentStatus === 'Pending'
+                ? 'status-pending'
+                : getStatusClass(order.orderStatus)
+            }`}>
               <span className="status-dot" aria-hidden="true" />
-              {order.orderStatus || 'Status unavailable'}
+              {order.trackingType === 'physical'
+                ? `Payment: ${order.paymentStatus || order.orderStatus || 'Status unavailable'}`
+                : order.orderStatus || 'Status unavailable'}
             </div>
           </div>
 
@@ -239,7 +251,10 @@ const TrackOrder = () => {
                     <li key={`${item.perfumeId || item.perfumeName}-${index}`}>
                       <strong>{item.perfumeName}</strong>
                       <span>
-                        Qty {item.quantity} · {formatAmount(item.unitPrice)} each
+                        Qty {item.quantity}
+                        {order.trackingType !== 'physical' && item.unitPrice !== undefined
+                          ? ` · ${formatAmount(item.unitPrice)} each`
+                          : ''}
                       </span>
                     </li>
                   ))}
@@ -253,43 +268,66 @@ const TrackOrder = () => {
               <span className="meta-label">Recipient</span>
               <p className="meta-value">{order.customerName || '—'}</p>
             </div>
-          </div>
-
-          <div className="financial-strip">
-            <div className="strip-item">
-              <span className="strip-label">Quantity</span>
-              <strong className="strip-val">
-                {displayQuantity === null
-                  ? '—'
-                  : `${displayQuantity} ${
-                      displayQuantity === 1 ? 'bottle' : 'bottles'
-                    }`}
-              </strong>
-            </div>
-
-            <div className="strip-item">
-              <span className="strip-label">Unit price</span>
-              <strong className="strip-val">
-                {orderItems.length === 1
-                  ? formatAmount(orderItems[0].unitPrice)
-                  : orderItems.length > 1
-                    ? 'See items above'
-                    : formatAmount(order.unitPrice)}
-              </strong>
-            </div>
-
-            <div className="strip-item">
-              <span className="strip-label">Total amount</span>
-              <strong className="strip-val strip-total">
-                {formatAmount(order.totalAmount)}
-              </strong>
+            <div className="meta-box">
+              <span className="meta-label">Order date</span>
+              <p className="meta-value">{formatDate(order.orderDate || order.createdAt)}</p>
             </div>
           </div>
 
-          <div className="stepper-wrapper-lux">
-            <h2 className="stepper-title">Delivery progress</h2>
-            <OrderStepper currentStatus={order.orderStatus} />
-          </div>
+          {order.trackingType === 'physical' ? (
+            <div className="financial-strip">
+              <div className="strip-item">
+                <span className="strip-label">Quantity</span>
+                <strong className="strip-val">
+                  {displayQuantity === null
+                    ? '—'
+                    : `${displayQuantity} ${displayQuantity === 1 ? 'bottle' : 'bottles'}`}
+                </strong>
+              </div>
+              <div className="strip-item">
+                <span className="strip-label">Payment status</span>
+                <strong className="strip-val">{order.paymentStatus || order.orderStatus || '—'}</strong>
+              </div>
+            </div>
+          ) : (
+            <>
+              <div className="financial-strip">
+                <div className="strip-item">
+                  <span className="strip-label">Quantity</span>
+                  <strong className="strip-val">
+                    {displayQuantity === null
+                      ? '—'
+                      : `${displayQuantity} ${
+                          displayQuantity === 1 ? 'bottle' : 'bottles'
+                        }`}
+                  </strong>
+                </div>
+
+                <div className="strip-item">
+                  <span className="strip-label">Unit price</span>
+                  <strong className="strip-val">
+                    {orderItems.length === 1
+                      ? formatAmount(orderItems[0].unitPrice)
+                      : orderItems.length > 1
+                        ? 'See items above'
+                        : formatAmount(order.unitPrice)}
+                  </strong>
+                </div>
+
+                <div className="strip-item">
+                  <span className="strip-label">Total amount</span>
+                  <strong className="strip-val strip-total">
+                    {formatAmount(order.totalAmount)}
+                  </strong>
+                </div>
+              </div>
+
+              <div className="stepper-wrapper-lux">
+                <h2 className="stepper-title">Delivery progress</h2>
+                <OrderStepper currentStatus={order.orderStatus} />
+              </div>
+            </>
+          )}
         </section>
       )}
 

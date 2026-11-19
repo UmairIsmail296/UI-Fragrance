@@ -12,6 +12,13 @@ const perfumeSaleSchema = new mongoose.Schema(
       required: [true, 'Perfume name is required'],
       trim: true,
     },
+    trackingId: {
+      type: String,
+      trim: true,
+      uppercase: true,
+      unique: true,
+      sparse: true,
+    },
     quantity: {
       type: Number,
       required: true,
@@ -60,6 +67,13 @@ const perfumeSaleSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: '',
+    },
+    customerEmail: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      default: '',
+      match: [/^$|^\S+@\S+\.\S+$/, 'Please enter a valid email address'],
     },
     customerPhone: {
       type: String,

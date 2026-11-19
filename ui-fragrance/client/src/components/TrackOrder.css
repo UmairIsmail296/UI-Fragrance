@@ -263,6 +263,12 @@
   color: #a43d35;
 }
 
+.status-pending {
+  border-color: #f0d09a;
+  background: #fff2dd;
+  color: #9a5a08;
+}
+
 /* Order information */
 
 .order-meta-grid {

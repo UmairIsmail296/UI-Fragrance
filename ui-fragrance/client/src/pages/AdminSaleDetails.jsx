@@ -145,6 +145,7 @@ const AdminSaleDetails = () => {
                 <h2>{sale.customerName || 'Customer not specified'}</h2>
                 <dl>
                   <div><dt>Customer name</dt><dd>{sale.customerName || '—'}</dd></div>
+                  <div><dt>Email address</dt><dd>{sale.customerEmail || '—'}</dd></div>
                   <div><dt>Phone number</dt><dd>{sale.customerPhone || '—'}</dd></div>
                 </dl>
               </section>
@@ -153,6 +154,7 @@ const AdminSaleDetails = () => {
                 <p className="sale-details-eyebrow">Sale information</p>
                 <h2>Transaction</h2>
                 <dl>
+                  <div><dt>Tracking ID</dt><dd>{sale.trackingId || '—'}</dd></div>
                   <div><dt>Sale date</dt><dd>{formatDate(sale.saleDate)}</dd></div>
                   <div>
                     <dt>Payment status</dt>

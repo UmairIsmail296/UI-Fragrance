@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const Perfume = require('../models/Perfume');
+const PerfumeSale = require('../models/PerfumeSale');
 const generateTrackingId = require('../utils/generateTrackingId');
 const { protectAdmin } = require('../middleware/authMiddleware');
 const { sendOrderConfirmationEmail } = require('../utils/sendEmail');
@@ -128,7 +129,7 @@ router.post('/', upload.single('paymentScreenshot'), async (req, res) => {
       return res.status(500).json({ message: 'Payment screenshot upload failed' });
     }
 
-    const orderId = await generateTrackingId(Order);
+    const orderId = await generateTrackingId(Order, PerfumeSale);
 
     const order = await Order.create({
       orderId,
@@ -171,12 +172,32 @@ router.get('/track/:orderId', async (req, res) => {
       orderId: { $regex: new RegExp(`^${escaped}$`, 'i') },
     });
 
-    if (!order) {
+    if (order) {
+      const trackedOrder = order.toObject();
+      delete trackedOrder.paymentScreenshotUrl;
+      trackedOrder.orderStatus = formatOrderStatus(trackedOrder.status || trackedOrder.orderStatus);
+      trackedOrder.trackingType = 'online';
+      res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+      return res.status(200).json(trackedOrder);
+    }
+
+    const sale = await PerfumeSale.findOne({
+      trackingId: { $regex: new RegExp(`^${escaped}$`, 'i') },
+    }).lean();
+    if (!sale) {
       return res.status(404).json({ message: 'No order found with this Tracking ID' });
     }
-    const trackedOrder = order.toObject();
-    delete trackedOrder.paymentScreenshotUrl;
-    trackedOrder.orderStatus = formatOrderStatus(trackedOrder.status || trackedOrder.orderStatus);
+
+    const trackedOrder = {
+      orderId: sale.trackingId,
+      trackingType: 'physical',
+      customerName: sale.customerName,
+      items: [{ perfumeName: sale.perfumeName, quantity: sale.quantity }],
+      quantity: sale.quantity,
+      orderStatus: sale.paymentStatus,
+      paymentStatus: sale.paymentStatus,
+      orderDate: sale.saleDate,
+    };
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.status(200).json(trackedOrder);
   } catch (error) {

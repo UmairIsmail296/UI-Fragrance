@@ -18,6 +18,7 @@ const emptyForm = () => ({
   addedBy: '',
   saleDate: todayString(),
   customerName: '',
+  customerEmail: '',
   customerPhone: '',
   notes: '',
 });
@@ -140,6 +141,7 @@ const PerfumeSalesManager = () => {
       addedBy: sale.addedBy || '',
       saleDate: new Date(sale.saleDate).toISOString().slice(0, 10),
       customerName: sale.customerName || '',
+      customerEmail: sale.customerEmail || '',
       customerPhone: sale.customerPhone || '',
       notes: sale.notes || '',
     });
@@ -188,6 +190,7 @@ const PerfumeSalesManager = () => {
       addedBy: form.addedBy,
       saleDate: form.saleDate,
       customerName: form.customerName,
+      customerEmail: form.customerEmail,
       customerPhone: form.customerPhone,
       notes: form.notes,
     };
@@ -197,8 +200,12 @@ const PerfumeSalesManager = () => {
         await api.put(`/perfume-sales/${editingId}`, payload);
         toast.success('Sale updated successfully');
       } else {
-        await api.post('/perfume-sales', payload);
-        toast.success('Sale added successfully');
+        const response = await api.post('/perfume-sales', payload);
+        if (response.data.emailSent === false) {
+          toast.warning(response.data.message);
+        } else {
+          toast.success(response.data.message || 'Sale added successfully');
+        }
       }
       window.dispatchEvent(new Event('sales-data-updated'));
       resetForm();
@@ -357,6 +364,10 @@ const PerfumeSalesManager = () => {
               <input id="sale-customer" name="customerName" value={form.customerName} onChange={handleChange} />
             </div>
             <div className="form-group">
+              <label htmlFor="sale-customer-email">Customer Email (optional)</label>
+              <input id="sale-customer-email" name="customerEmail" type="email" value={form.customerEmail} onChange={handleChange} />
+            </div>
+            <div className="form-group">
               <label htmlFor="sale-customer-phone">Customer Phone (optional)</label>
               <input id="sale-customer-phone" name="customerPhone" type="tel" value={form.customerPhone} onChange={handleChange} />
             </div>
@@ -420,6 +431,7 @@ const PerfumeSalesManager = () => {
           <table className="admin-table perfume-sales-table">
             <thead>
               <tr>
+                <th>Tracking ID</th>
                 <th>Perfume Name</th>
                 <th>Quantity</th>
                 <th>Price</th>
@@ -445,6 +457,7 @@ const PerfumeSalesManager = () => {
                   tabIndex={0}
                   aria-label={`View details for ${sale.perfumeName}`}
                 >
+                  <td>{sale.trackingId || '—'}</td>
                   <td title={sale.notes || undefined}>{sale.perfumeName}</td>
                   <td>{sale.quantity}</td>
                   <td>{formatMoney(sale.sellingPrice)}</td>
@@ -472,7 +485,7 @@ const PerfumeSalesManager = () => {
                 </tr>
               ))}
               {sales.length === 0 && (
-                <tr><td colSpan={8} className="text-center">No perfume sales found.</td></tr>
+                <tr><td colSpan={9} className="text-center">No perfume sales found.</td></tr>
               )}
             </tbody>
           </table>
