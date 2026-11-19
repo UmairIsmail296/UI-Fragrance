@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import HeroSection from '../components/HeroSection.jsx';
 import PerfumeCard from '../components/PerfumeCard.jsx';
+import FAQSection from '../components/FAQSection.jsx';
 import SEO from '../components/SEO.jsx';
 import api from '../utils/api.js';
 import useScrollReveal from '../hooks/useScrollReveal.js';
@@ -135,6 +136,7 @@ const Home = () => {
           </div>
         </div>
       </section>
+      <FAQSection />
     </main>
   );
 };

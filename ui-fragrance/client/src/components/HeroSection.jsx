@@ -114,7 +114,7 @@ export default function HeroSection() {
               <img
                 src="/IMG_E1195.JPG"
                 alt="Morning Dew eau de parfum"
-                fetchPriority="high"
+                fetchpriority="high"
               />
 
               <div className="scent-hero__image-label">
